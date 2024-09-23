@@ -17,14 +17,12 @@ public class StudentConfig {
             Student ramsy = new Student(
                         "Ramsy",
                         "ramsy@gmail.com",
-                        LocalDate.of(2006, Month.FEBRUARY,10),
-                        21
+                        LocalDate.of(2006, Month.FEBRUARY,10)
             );
             Student alex= new Student(
                     "Alex",
                     "alex@gmail.com",
-                    LocalDate.of(2003, Month.MAY,10),
-                    21
+                    LocalDate.of(2003, Month.MAY,10)
             );
 //            saving the instances in the database
             repository.saveAll(
