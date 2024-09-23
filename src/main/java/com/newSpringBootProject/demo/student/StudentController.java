@@ -1,6 +1,7 @@
 package com.newSpringBootProject.demo.student;
 
 import jakarta.transaction.Transactional;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -18,10 +19,12 @@ public class StudentController {
         this.studentService=studentService;
     }
 
-    @GetMapping
-    public List<Student> getStudents() {
-        return  studentService.getStudents();
-    }
+//    @GetMapping
+//    public String getStudents(Model model) {
+//        List<Student> studentList = studentService.getStudents();
+//        model.addAttribute("studentList", studentList);
+//        return "index";
+//    }
     @PostMapping
     public void registerStudent(@RequestBody Student student){//taking the student from the request body
         studentService.addNewStudents(student);
