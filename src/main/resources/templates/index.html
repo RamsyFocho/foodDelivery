@@ -2,14 +2,30 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Home Page</title>
+    <link rel="stylesheet" href="../static/output.css">
+    <link rel="stylesheet" href="../static/nav.css">
+    <link rel="stylesheet" href="../static/fontawesome-free-6.6.0-web/css/all.min.css">
+    <script src="../static/header.js" defer></script>
+
 </head>
-<body>
-    <div>
+<body class="bg-gray-100">
+    <nav class="bg-blue-500">
+        <input type="checkbox" name="bar" id="bar">
+        <label for="bar" class="bar">
+            <i class="fas fa-bars text-2xl "></i>
+        </label>
+        <label class="logo"><i class="fas fa-graduation-cap color:white"></i> Student System </label>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Contact</a></li>
+            <li><a href="#">About</a></li>
+        </ul>
+    </nav>
+
         <div th:each="student : ${studentList}">
             <p th:text="${student.name}"></p>
             <p th:text="${student.email}"></p>
         </div>
-    </div>
 </body>
 </html>
