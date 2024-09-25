@@ -79,8 +79,12 @@ public class Student {
     }
 
     public Integer getAge() {
-        return Period.between(this.dob,LocalDate.now()).getYears();
+        if (this.dob == null) {
+            return null; // Return null or you can choose to return a default value like 0
+        }
+        return Period.between(this.dob, LocalDate.now()).getYears();
     }
+
 
     public void setAge(Integer age) {
 
