@@ -12,7 +12,7 @@ import java.util.List;
 public class StudentController {
 
     private final StudentService studentService;
-    Student student= new Student();
+//    Student student= new Student();
 
     @Autowired
     public StudentController(StudentService studentService){
@@ -27,7 +27,7 @@ public class StudentController {
         Student student = new Student();
         model.addAttribute("Update_student",student);
 
-        return "Student"; // This should match the name of your Thymeleaf template without extension (e.g., Student.html)
+        return "student/Student"; // This should match the name of your Thymeleaf template without extension (e.g., Student.html)
     }
 //get the values and display it as a student object model to the post method
     @GetMapping("/create/student")
