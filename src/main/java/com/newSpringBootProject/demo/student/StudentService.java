@@ -31,9 +31,10 @@ public class StudentService {
         Optional<Student> studentByEmail = studentRepository.findStudentByEmail(student.getEmail());
         if(studentByEmail.isPresent()){
             throw new IllegalStateException("email taken");
+        }else{
+            System.out.println(student);
+            studentRepository.save(student);
         }
-        System.out.println(student);
-        studentRepository.save(student);
     }
 
     public void deleteStudent(Long studentId) {

@@ -25,9 +25,9 @@ public class StudentConfig {
                     LocalDate.of(2003, Month.MAY,10)
             );
 //            saving the instances in the database
-            repository.saveAll(
-                    List.of(ramsy,alex)
-            );
+//            repository.saveAll(
+//                    List.of(ramsy,alex)
+//            );
         };
     }
 }
