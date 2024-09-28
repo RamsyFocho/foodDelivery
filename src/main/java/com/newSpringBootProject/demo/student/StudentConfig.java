@@ -14,16 +14,7 @@ public class StudentConfig {
     CommandLineRunner commandLineRunner(StudentRepository repository){
         return args -> {
 //create instances of the student object
-            Student ramsy = new Student(
-                        "Ramsy",
-                        "ramsy@gmail.com",
-                        LocalDate.of(2006, Month.FEBRUARY,10)
-            );
-            Student alex= new Student(
-                    "Alex",
-                    "alex@gmail.com",
-                    LocalDate.of(2003, Month.MAY,10)
-            );
+
 //            saving the instances in the database
 //            repository.saveAll(
 //                    List.of(ramsy,alex)

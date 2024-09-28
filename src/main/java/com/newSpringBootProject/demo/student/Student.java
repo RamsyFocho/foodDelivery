@@ -1,5 +1,6 @@
 package com.newSpringBootProject.demo.student;
 
+import com.newSpringBootProject.demo.Level.Level;
 import jakarta.persistence.*;
 import jdk.jfr.Enabled;
 
@@ -25,25 +26,26 @@ public class Student {
     private LocalDate dob;
     @Transient
     private Integer age;
+    @ManyToOne
+    @JoinColumn(name = "level_id", referencedColumnName = "id", nullable = false)
+    private Level level;
 
-//constructor with no values
     public Student() {
     }
-//constructor with all the values
-    public Student(Long id, String name, String email, LocalDate dob) {
+//without Id
+    public Student(String name, String email, LocalDate dob, Level level) {
+        this.name = name;
+        this.email = email;
+        this.dob = dob;
+        this.level = level;
+    }
 
+    public Student(Long id, String name, String email, LocalDate dob, Level level) {
         Id = id;
         this.name = name;
         this.email = email;
         this.dob = dob;
-
-    }
-//constructor with all the values except the Id
-    public Student(String name, String email, LocalDate dob) {
-        this.name = name;
-        this.email = email;
-        this.dob = dob;
-
+        this.level = level;
     }
 
     public Long getId() {
@@ -78,6 +80,14 @@ public class Student {
         this.dob = dob;
     }
 
+    public Level getLevel() {
+        return level;
+    }
+
+    public void setLevel(Level level) {
+        this.level = level;
+    }
+
     public Integer getAge() {
         return Period.between(this.dob,LocalDate.now()).getYears();
     }
@@ -86,14 +96,14 @@ public class Student {
 
     }
 //Not yet called
-    @Override
-    public String toString() {
-        return "Student{" +
-                "Id=" + Id +
-                ", name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", dob=" + dob +
-                ", age=" + age +
-                '}';
-    }
+//    @Override
+//    public String toString() {
+//        return "Student{" +
+//                "Id=" + Id +
+//                ", name='" + name + '\'' +
+//                ", email='" + email + '\'' +
+//                ", dob=" + dob +
+//                ", age=" + age +
+//                '}';
+//    }
 }

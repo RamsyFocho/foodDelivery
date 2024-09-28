@@ -1,5 +1,7 @@
 package com.newSpringBootProject.demo.student;
 
+import com.newSpringBootProject.demo.Level.Level;
+import com.newSpringBootProject.demo.Level.LevelService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -11,12 +13,13 @@ import java.util.List;
 @Controller // Parent path for all student-related endpoints
 public class StudentController {
 
-    private final StudentService studentService;
-//    Student student= new Student();
+    private final LevelService levelService; // Declare LevelService
+    private final StudentService studentService; // Declare StudentService
 
     @Autowired
-    public StudentController(StudentService studentService){
-        this.studentService = studentService;
+    public StudentController(LevelService levelService, StudentService studentService) {
+        this.levelService = levelService; // Inject LevelService
+        this.studentService = studentService; // Inject StudentService
     }
 
     // Method to display the list of students (mapped to GET requests on /students)
@@ -34,7 +37,13 @@ public class StudentController {
     public String createStudent(Model model){
         Student student = new Student();
         model.addAttribute("student",student);
-        return "Create_Student";
+
+        // Fetch levels from your Level service
+
+        List<Level> levels = levelService.getAllLevels(); // Assuming you have a method to get all levels
+        model.addAttribute("levels", levels); // Add levels to the model
+
+        return "student/Create_Student";
     }
 
     // Method to handle student registration (mapped to POST requests on /students/register)
