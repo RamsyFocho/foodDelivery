@@ -24,11 +24,92 @@
         </ul>
     </nav>
 
-        <div th:each="student : ${studentList}">
-            <p th:text="${student.name}"></p>
-            <p th:text="${student.email}"></p>
+    <!-- Hero Section -->
+    <section class="bg-blue-600 text-white py-20">
+        <div class="container mx-auto text-center">
+            <h1 class="text-5xl font-bold">Welcome to the Student System</h1>
+            <p class="mt-4 text-lg">A modern platform for managing student information and attendance</p>
+            <a href="#" class="mt-8 inline-block bg-white text-blue-600 px-8 py-3 rounded-full font-semibold transition hover:bg-gray-200">
+                Get Started
+            </a>
         </div>
-<!--    <script th:src="@{/js/header.js}" defer></script>-->
+    </section>
 
+    <!-- Slideshow Section -->
+    <section class="relative py-10 bg-gray-100">
+        <div class="container mx-auto">
+            <div class="slideshow-container">
+
+                <!-- Slide 1 -->
+                <div class="mySlides fade">
+                    <img src="https://via.placeholder.com/1200x500" class="w-full rounded-lg">
+                    <div class="text-center mt-4">
+                        <h2 class="text-3xl font-bold">Manage Student Records</h2>
+                        <p class="mt-2">Easily add, edit, or view student details with just a few clicks</p>
+                    </div>
+                </div>
+
+                <!-- Slide 2 -->
+                <div class="mySlides fade">
+                    <img src="https://via.placeholder.com/1200x500" class="w-full rounded-lg">
+                    <div class="text-center mt-4">
+                        <h2 class="text-3xl font-bold">Track Attendance</h2>
+                        <p class="mt-2">Keep track of student attendance with our smart system</p>
+                    </div>
+                </div>
+
+                <!-- Slide 3 -->
+                <div class="mySlides fade">
+                    <img src="https://via.placeholder.com/1200x500" class="w-full rounded-lg">
+                    <div class="text-center mt-4">
+                        <h2 class="text-3xl font-bold">Get Detailed Reports</h2>
+                        <p class="mt-2">Generate detailed reports on student performance and attendance</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Cards Section -->
+    <section class="py-20 bg-gray-200">
+        <div class="container mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Card 1 -->
+                <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                    <i class="fas fa-users text-blue-500 text-4xl mb-4"></i>
+                    <h3 class="text-xl font-bold">Manage Students</h3>
+                    <p class="mt-2 text-gray-600">Add and manage all student records efficiently</p>
+                </div>
+
+                <!-- Card 2 -->
+                <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                    <i class="fas fa-calendar-check text-blue-500 text-4xl mb-4"></i>
+                    <h3 class="text-xl font-bold">Track Attendance</h3>
+                    <p class="mt-2 text-gray-600">Track and monitor student attendance regularly</p>
+                </div>
+
+                <!-- Card 3 -->
+                <div class="bg-white shadow-md rounded-lg p-6 text-center">
+                    <i class="fas fa-chart-bar text-blue-500 text-4xl mb-4"></i>
+                    <h3 class="text-xl font-bold">Generate Reports</h3>
+                    <p class="mt-2 text-gray-600">Get in-depth reports on student performance</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Section -->
+    <footer class="bg-blue-500 text-white py-10">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024 Student System. All rights reserved.</p>
+            <div class="mt-4">
+                <a href="#" class="mr-4"><i class="fab fa-facebook text-xl"></i></a>
+                <a href="#" class="mr-4"><i class="fab fa-twitter text-xl"></i></a>
+                <a href="#" class="mr-4"><i class="fab fa-instagram text-xl"></i></a>
+            </div>
+        </div>
+    </footer>
+    <script th:src="@{/js/header.js}" defer></script>
+<!--end point-->
 </body>
 </html>
