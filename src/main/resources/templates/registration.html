@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Food Distribution</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            display: none;
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .input-error {
+            border-color: #ef4444 !important;
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Image Section -->
+        <div class="hidden md:block w-1/2 bg-cover bg-center relative">
+            <div class="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-purple-600/30"></div>
+            <img 
+                th:src="@{/images/food-distribution.jpg}"
+                class="w-full h-full object-cover fade-in"
+                alt="Food Distribution"
+            />
+        </div>
+
+        <!-- Form Section -->
+        <div class="flex flex-col justify-center w-full md:w-1/2 p-8">
+            <div class="max-w-md mx-auto w-full space-y-8 fade-in">
+                <!-- Header -->
+                <div class="text-center">
+                    <i class="fas fa-user-plus text-4xl text-blue-600 mb-4"></i>
+                    <h1 class="text-3xl font-bold text-gray-900">Create Account</h1>
+                    <p class="mt-2 text-gray-600">Join our food distribution platform</p>
+                </div>
+
+                <!-- Registration Form -->
+                <form id="registrationForm" class="mt-8 space-y-6">
+                    <!-- Name Field -->
+                    <div class="space-y-2">
+                        <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user text-gray-400 group-hover:text-blue-500 transition-colors"></i>
+                            </div>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg 
+                                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                       transition-all duration-200 ease-in-out
+                                       hover:border-blue-400"
+                                placeholder="John Doe"
+                                required
+                                minlength="2"
+                            />
+                            <span class="error-message" id="nameError"></span>
+                        </div>
+                    </div>
+
+                    <!-- Email Field -->
+                    <div class="space-y-2">
+                        <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-envelope text-gray-400 group-hover:text-blue-500 transition-colors"></i>
+                            </div>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg 
+                                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                       transition-all duration-200 ease-in-out
+                                       hover:border-blue-400"
+                                placeholder="you@example.com"
+                                required
+                            />
+                            <span class="error-message" id="emailError"></span>
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="space-y-2">
+                        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400 group-hover:text-blue-500 transition-colors"></i>
+                            </div>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg 
+                                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                       transition-all duration-200 ease-in-out
+                                       hover:border-blue-400"
+                                placeholder="••••••••"
+                                required
+                                minlength="8"
+                            />
+                            <span class="error-message" id="passwordError"></span>
+                        </div>
+                        <p class="text-xs text-gray-500">Must be at least 8 characters long</p>
+                    </div>
+
+                    <!-- Confirm Password Field -->
+                    <div class="space-y-2">
+                        <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-lock text-gray-400 group-hover:text-blue-500 transition-colors"></i>
+                            </div>
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                name="confirmPassword"
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg 
+                                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                       transition-all duration-200 ease-in-out
+                                       hover:border-blue-400"
+                                placeholder="••••••••"
+                                required
+                            />
+                            <span class="error-message" id="confirmPasswordError"></span>
+                        </div>
+                    </div>
+
+                    <!-- Role Selection -->
+                    <div class="space-y-2">
+                        <label for="role" class="block text-sm font-medium text-gray-700">Account Type</label>
+                        <div class="relative group">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="fas fa-user-shield text-gray-400 group-hover:text-blue-500 transition-colors"></i>
+                            </div>
+                            <select
+                                id="role"
+                                name="role"
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg 
+                                       focus:ring-2 focus:ring-blue-500 focus:border-blue-500 
+                                       transition-all duration-200 ease-in-out
+                                       hover:border-blue-400"
+                                required
+                            >
+                                <option value="">Select role</option>
+                                <option value="user">User</option>
+                                <option value="admin">Admin</option>
+                            </select>
+                            <span class="error-message" id="roleError"></span>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button
+                        type="submit"
+                        id="submitButton"
+                        class="w-full flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-lg
+                               text-white bg-blue-600 hover:bg-blue-700 
+                               focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                               transition-all duration-200 ease-in-out
+                               disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        <span id="buttonText">Create Account</span>
+                        <i id="loadingSpinner" class="fas fa-circle-notch spin ml-2 hidden"></i>
+                    </button>
+
+                    <!-- Login Link -->
+                    <p class="mt-4 text-center text-sm text-gray-600">
+                        Already have an account?
+                        <a href="/login" class="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+                            Sign in instead
+                        </a>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('registrationForm');
+            const submitButton = document.getElementById('submitButton');
+            const buttonText = document.getElementById('buttonText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+
+            // Validation functions
+            const validatePassword = (password) => {
+                return password.length >= 8;
+            };
+
+            const validateEmail = (email) => {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            };
+
+            const showError = (elementId, message) => {
+                const errorElement = document.getElementById(elementId + 'Error');
+                const inputElement = document.getElementById(elementId);
+                errorElement.textContent = message;
+                errorElement.style.display = 'block';
+                inputElement.classList.add('input-error');
+            };
+
+            const clearError = (elementId) => {
+                const errorElement = document.getElementById(elementId + 'Error');
+                const inputElement = document.getElementById(elementId);
+                errorElement.style.display = 'none';
+                inputElement.classList.remove('input-error');
+            };
+
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                let isValid = true;
+                
+                // Clear all previous errors
+                ['name', 'email', 'password', 'confirmPassword', 'role'].forEach(field => {
+                    clearError(field);
+                });
+
+                // Get form data
+                const formData = new FormData(form);
+                const data = {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    password: formData.get('password'),
+                    role: formData.get('role')
+                };
+
+                // Validate name
+                if (data.name.length < 2) {
+                    showError('name', 'Name must be at least 2 characters long');
+                    isValid = false;
+                }
+
+                // Validate email
+                if (!validateEmail(data.email)) {
+                    showError('email', 'Please enter a valid email address');
+                    isValid = false;
+                }
+
+                // Validate password
+                if (!validatePassword(data.password)) {
+                    showError('password', 'Password must be at least 8 characters long');
+                    isValid = false;
+                }
+
+                // Validate password confirmation
+                if (data.password !== formData.get('confirmPassword')) {
+                    showError('confirmPassword', 'Passwords do not match');
+                    isValid = false;
+                }
+
+                // Validate role
+                if (!data.role) {
+                    showError('role', 'Please select a role');
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    form.classList.add('shake');
+                    setTimeout(() => form.classList.remove('shake'), 500);
+                    return;
+                }
+
+                // Show loading state
+                submitButton.disabled = true;
+                buttonText.textContent = 'Creating Account...';
+                loadingSpinner.classList.remove('hidden');
+
+                try {
+                    const response = await fetch('/api/register', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Registration failed');
+                    }
+
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        // Redirect to login page or dashboard
+                        window.location.href = '/login?registered=true';
+                    } else {
+                        throw new Error(result.message || 'Registration failed');
+                    }
+
+                } catch (error) {
+                    console.error('Registration error:', error);
+                    form.classList.add('shake');
+                    setTimeout(() => form.classList.remove('shake'), 500);
+                    
+                    if (error.message.includes('email')) {
+                        showError('email', 'This email is already registered');
+                    } else {
+                        alert('Registration failed. Please try again.');
+                    }
+                    
+                } finally {
+                    submitButton.disabled = false;
+                    buttonText.textContent = 'Create Account';
+                    loadingSpinner.classList.add('hidden');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
