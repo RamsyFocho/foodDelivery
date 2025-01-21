@@ -4,8 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FoodShare - Distribution System</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+      <script th:src="@{/js/tailwind.jit.js}"></script>
+    
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome-free-6.6.0-web/css/all.min.css}">
+    
+    <!-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"> -->
     <style>
         @keyframes float {
             0% { transform: translateY(0px); }
@@ -80,7 +85,7 @@
                         <a href="#" class="text-gray-900 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Features</a>
                         <a href="#" class="text-gray-900 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">About</a>
                         <a href="#" class="text-gray-900 hover:text-indigo-600 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
-                        <a href="#" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors">Login</a>
+                        <a th:href="@{/loginPage}" class="bg-indigo-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-indigo-700 transition-colors">Login</a>
                     </div>
                 </div>
 
@@ -100,7 +105,7 @@
                 <a href="#" class="text-gray-900 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">Features</a>
                 <a href="#" class="text-gray-900 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">About</a>
                 <a href="#" class="text-gray-900 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">Contact</a>
-                <a href="#" class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-indigo-700 transition-colors">Login</a>
+                <a th:href="@{/loginPage}" class="bg-indigo-600 text-white block px-3 py-2 rounded-md text-base font-medium hover:bg-indigo-700 transition-colors">Login</a>
             </div>
         </div>
     </nav>

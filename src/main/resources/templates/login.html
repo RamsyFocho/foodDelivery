@@ -4,11 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Food Distribution</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/framer-motion/10.16.4/framer-motion.js"></script>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome-free-6.6.0-web/css/all.min.css}">
+    <script th:src="@{/fontAwesome-free-6.6.0-web/js/all.min.js}"></script>
+    <script th:src="@{/js/tailwind.jit.js}"></script>
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"> -->
+    <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+    
     <style>
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -45,7 +49,7 @@
         <div class="hidden md:block w-1/2 bg-cover bg-center relative">
             <div class="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-purple-600/30"></div>
             <img 
-                th:src="@{/images/food-distribution.jpg}"
+                th:src="@{/images/foods.jpg}"
                 class="w-full h-full object-cover fade-in"
                 alt="Food Distribution"
             />
@@ -62,8 +66,6 @@
                 </div>
 
                 <form 
-                    th:action="@{/login}" 
-                    method="POST" 
                     class="mt-8 space-y-6"
                     id="loginForm"
                 >
@@ -148,7 +150,7 @@
                     <!-- Sign Up Link -->
                     <p class="mt-4 text-center text-sm text-gray-600">
                         Don't have an account?
-                        <a href="#" class="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+                        <a th:href="@{/registerPage}" class="font-medium text-blue-600 hover:text-blue-500 transition-colors">
                             Sign up now
                         </a>
                     </p>
@@ -187,7 +189,9 @@
             const submitButton = document.getElementById('submitButton');
             const buttonText = document.getElementById('buttonText');
             const loadingSpinner = document.getElementById('loadingSpinner');
-
+            const email = document.getElementById("email");
+            const password = document.getElementById("password");
+    
             form.addEventListener('submit', async function(e) {
                 e.preventDefault();
                 
@@ -195,19 +199,36 @@
                 submitButton.disabled = true;
                 buttonText.textContent = 'Signing in...';
                 loadingSpinner.classList.remove('hidden');
-
+    
+                let emailValue = email.value;
+                let passwordValue = password.value;
+    
+                // Corrected loginData object
+                const loginData = { 
+                    email: emailValue, 
+                    password: passwordValue 
+                };
+    
                 try {
-                    // Simulate API call
-                    await new Promise(resolve => setTimeout(resolve, 1000));
-                    
-                    // Here you would normally submit the form
-                    form.submit();
-                    
+                    const response = await fetch("/auth/login", {
+                        method: "POST",
+                        headers: { 
+                            "Content-Type": "application/json" 
+                        },
+                        body: JSON.stringify(loginData),
+                    });
+    
+                    if (response.ok) {
+                        console.log("Success");
+                    } else {
+                        console.log("Failed");
+                        form.classList.add('shake');
+                        setTimeout(() => form.classList.remove('shake'), 500);
+                    }
                 } catch (error) {
-                    // Handle error
+                    console.error("Error occurred:", error);
                     form.classList.add('shake');
                     setTimeout(() => form.classList.remove('shake'), 500);
-                    
                 } finally {
                     // Reset button state
                     submitButton.disabled = false;
@@ -217,5 +238,6 @@
             });
         });
     </script>
+    
 </body>
 </html>

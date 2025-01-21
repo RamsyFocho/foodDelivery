@@ -4,10 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register - Food Distribution</title>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet"> -->
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome-free-6.6.0-web/css/all.min.css}">
+
+    <script th:src="@{/fontAwesome-free-6.6.0-web/js/all.min.js}"></script>
+    <script th:src="@{/js/tailwind.jit.js}"></script>
     <style>
         @keyframes shake {
             0%, 100% { transform: translateX(0); }
@@ -55,14 +60,14 @@
         <div class="hidden md:block w-1/2 bg-cover bg-center relative">
             <div class="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-purple-600/30"></div>
             <img 
-                th:src="@{/images/food-distribution.jpg}"
+                th:src="@{/images/foods.jpg}"
                 class="w-full h-full object-cover fade-in"
                 alt="Food Distribution"
             />
         </div>
 
         <!-- Form Section -->
-        <div class="flex flex-col justify-center w-full md:w-1/2 p-8">
+        <div class="flex flex-col justify-center w-full md:w-1/2 p-8 overflow-y">
             <div class="max-w-md mx-auto w-full space-y-8 fade-in">
                 <!-- Header -->
                 <div class="text-center">
@@ -165,7 +170,7 @@
                     </div>
 
                     <!-- Role Selection -->
-                    <div class="space-y-2">
+                    <!-- <div class="space-y-2">
                         <label for="role" class="block text-sm font-medium text-gray-700">Account Type</label>
                         <div class="relative group">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -186,7 +191,7 @@
                             </select>
                             <span class="error-message" id="roleError"></span>
                         </div>
-                    </div>
+                    </div> -->
 
                     <!-- Submit Button -->
                     <button
@@ -205,7 +210,7 @@
                     <!-- Login Link -->
                     <p class="mt-4 text-center text-sm text-gray-600">
                         Already have an account?
-                        <a href="/login" class="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+                        <a th:href="@{/loginPage}" class="font-medium text-blue-600 hover:text-blue-500 transition-colors">
                             Sign in instead
                         </a>
                     </p>
@@ -250,7 +255,7 @@
                 let isValid = true;
                 
                 // Clear all previous errors
-                ['name', 'email', 'password', 'confirmPassword', 'role'].forEach(field => {
+                ['name', 'email', 'password', 'confirmPassword'].forEach(field => {
                     clearError(field);
                 });
 
@@ -259,8 +264,8 @@
                 const data = {
                     name: formData.get('name'),
                     email: formData.get('email'),
-                    password: formData.get('password'),
-                    role: formData.get('role')
+                    password: formData.get('password')
+                    // role: formData.get('role')
                 };
 
                 // Validate name
@@ -288,10 +293,10 @@
                 }
 
                 // Validate role
-                if (!data.role) {
-                    showError('role', 'Please select a role');
-                    isValid = false;
-                }
+                // if (!data.role) {
+                //     showError('role', 'Please select a role');
+                //     isValid = false;
+                // }
 
                 if (!isValid) {
                     form.classList.add('shake');
@@ -305,7 +310,7 @@
                 loadingSpinner.classList.remove('hidden');
 
                 try {
-                    const response = await fetch('/api/register', {
+                    const response = await fetch('/auth/register', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
@@ -321,7 +326,9 @@
                     
                     if (result.success) {
                         // Redirect to login page or dashboard
-                        window.location.href = '/login?registered=true';
+                        // window.location.href = '/login?registered=true';
+                        console.log("registered");
+                        
                     } else {
                         throw new Error(result.message || 'Registration failed');
                     }
