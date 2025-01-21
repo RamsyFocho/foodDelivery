@@ -323,10 +323,12 @@
                     }
 
                     const result = await response.json();
+                    console.log(result);
                     
-                    if (result.success) {
+                    if (result.status=="success") {
                         // Redirect to login page or dashboard
                         // window.location.href = '/login?registered=true';
+                        alert("registered");
                         console.log("registered");
                         
                     } else {

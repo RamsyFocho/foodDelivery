@@ -220,6 +220,16 @@
     
                     if (response.ok) {
                         console.log("Success");
+                        const result = await response.json();
+                        console.log(result);
+                        if(result.status == "success"){
+                            if(result.role == "admin"){
+                                window.location = `/admin/dashboard`;
+                            }else{
+                                window.location = `/user/dashboard`;
+                            }
+                        }
+
                     } else {
                         console.log("Failed");
                         form.classList.add('shake');

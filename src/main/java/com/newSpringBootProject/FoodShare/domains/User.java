@@ -27,6 +27,9 @@ public class User {
             cascade = CascadeType.ALL,fetch = FetchType.LAZY)
     private List<Order> orders;
 
+    public User() {
+    }
+
     public User(Long id, String name, String email, String password, String role, List<Order> orders) {
         Id = id;
         this.name = name;
