@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Management - Food Distribution</title>
+<!--    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/js/all.min.js"></script>-->
+<!--    <script src="https://cdn.tailwindcss.com"></script>-->
+
+<!--    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">-->
+
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <link rel="stylesheet" th:href="@{/fontAwesome-free-6.6.0-web/css/all.min.css}">
+    <script th:src="@{/fontAwesome-free-6.6.0-web/js/all.min.js}"></script>
+    <script th:src="@{/js/tailwind.jit.js}"></script>
+
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .spin {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+<!-- Main Content -->
+<div class="min-h-screen p-8">
+    <!-- Header -->
+    <div class="max-w-6xl mx-auto">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Food Management</h1>
+            <button
+                    onclick="openAddModal()"
+                    class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+            >
+                <i class="fas fa-plus"></i>
+                Add New Item
+            </button>
+        </div>
+
+        <!-- Food Items Table -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Item</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Category</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Quantity</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Price(FCFA)</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Measuring Unit</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Expiry Date</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200" id="foodItemsTable">
+                <!-- Table rows will be dynamically populated -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add/Edit Modal -->
+<div id="foodModal" class="modal">
+    <div class="bg-white rounded-lg p-6 w-full max-w-md slide-in mt-4">
+        <h2 id="modalTitle" class="text-2xl font-bold mb-4">Add Food Item</h2>
+        <form id="foodForm" class="space-y-4">
+            <input type="hidden" id="foodId" name="id">
+
+            <!-- Name Field -->
+            <div>
+                <label for="name" class="block text-sm font-medium text-gray-700">Item Name</label>
+                <input
+                        type="text"
+                        id="name"
+                        name="name"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm
+                               focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                >
+            </div>
+
+            <!-- Category Field -->
+            <div>
+                <label for="category" class="block text-sm font-medium text-gray-700">Category</label>
+                <select
+                        id="category"
+                        name="category"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm
+                               focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                >
+                    <option value="">Select category</option>
+                    <option value="grains">Grains</option>
+                    <option value="vegetables">Vegetables</option>
+                    <option value="fruits">Fruits</option>
+                    <option value="protein">Protein</option>
+                    <option value="dairy">Dairy</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <!-- Quantity Field -->
+            <div>
+                <label for="quantity" class="block text-sm font-medium text-gray-700">Quantity</label>
+                <div class="mt-1 flex rounded-lg shadow-sm">
+                    <input
+                            type="number"
+                            id="quantity"
+                            name="quantity"
+                            min="0"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-l-lg
+                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            required
+                    >
+                    <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-50 rounded-r-lg text-gray-500">
+                            units
+                        </span>
+                </div>
+            </div>
+            <!-- Price Field -->
+            <div>
+                <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                <div class="mt-1 flex rounded-lg shadow-sm">
+                    <input
+                            type="number"
+                            id="price"
+                            name="price"
+                            placeholder="unit price in FCFA"
+                            min="0"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-l-lg
+                                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            required
+                    >
+                    <span class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-50 rounded-r-lg text-gray-500">
+                            units
+                        </span>
+                </div>
+            </div>
+            <!-- Unit Field -->
+            <div>
+                <label for="unit" class="block text-sm font-medium text-gray-700">Measuring Unit</label>
+                <input
+                        type="text"
+                        id="unit"
+                        name="unit"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm
+                               focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="bag, cup, buckets etc"
+                        required
+                >
+            </div>
+
+            <!-- Expiry Date Field -->
+            <div>
+                <label for="expiryDate" class="block text-sm font-medium text-gray-700">Expiry Date</label>
+                <input
+                        type="date"
+                        id="expiryDate"
+                        name="expiryDate"
+                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm
+                               focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                >
+            </div>
+
+            <!-- Form Buttons -->
+            <div class="flex justify-end gap-3 mt-6">
+                <button
+                        type="button"
+                        onclick="closeModal()"
+                        class="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+                >
+                    Cancel
+                </button>
+                <button
+                        type="submit"
+                        id="submitButton"
+                        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2"
+                >
+                    <span id="buttonText">Save Item</span>
+                    <i id="loadingSpinner" class="fas fa-circle-notch spin hidden"></i>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    // Global variables
+    let editingId = null;
+    const modal = document.getElementById('foodModal');
+    const form = document.getElementById('foodForm');
+    const submitButton = document.getElementById('submitButton');
+    const buttonText = document.getElementById('buttonText');
+    const loadingSpinner = document.getElementById('loadingSpinner');
+
+    // Initialize and fetch data
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchFoodItems();
+    });
+
+    // Fetch food items
+    async function fetchFoodItems() {
+        try {
+            const response = await fetch('/foodApi/food-items');
+            const data = await response.json();
+            console.log(data);
+            renderFoodItems(data);
+        } catch (error) {
+            console.error('Error fetching food items:', error);
+            alert('Failed to load food items. Please try again.');
+        }
+    }
+
+    // Render food items table
+    function renderFoodItems(items) {
+        const tbody = document.getElementById('foodItemsTable');
+        tbody.innerHTML = items.map(item => `
+            <tr class="hover:bg-gray-50">
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm font-medium text-gray-900">${item.name}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                        ${item.category}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    ${item.quantity} units
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    ${item.price} units
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    ${item.unit}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    ${new Date(item.expiryDate).toLocaleDateString()}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button
+                        onclick="editItem(${item.id})"
+                        class="text-blue-600 hover:text-blue-900 mr-3"
+                    >
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button
+                        onclick="deleteItem(${item.id})"
+                        class="text-red-600 hover:text-red-900"
+                    >
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+    }
+
+    // Modal functions
+    function openAddModal() {
+        editingId = null;
+        document.getElementById('modalTitle').textContent = 'Add Food Item';
+        form.reset();
+        modal.classList.add('active');
+    }
+
+    function closeModal() {
+        modal.classList.remove('active');
+        form.reset();
+        editingId = null;
+    }
+
+    async function editItem(id) {
+        try {
+            const response = await fetch(`/foodApi/food-items/${id}`);
+            const item = await response.json();
+
+            editingId = id;
+            document.getElementById('modalTitle').textContent = 'Edit Food Item';
+            document.getElementById('foodId').value = item.id;
+            document.getElementById('name').value = item.name;
+            document.getElementById('category').value = item.category;
+            document.getElementById('quantity').value = item.quantity;
+            document.getElementById('price').value = item.price;
+            document.getElementById('unit').value = item.unit;
+            document.getElementById('expiryDate').value = item.expiryDate;
+
+            modal.classList.add('active');
+        } catch (error) {
+            console.error('Error fetching item details:', error);
+            alert('Failed to load item details. Please try again.');
+        }
+    }
+
+    async function deleteItem(id) {
+        if (!confirm('Are you sure you want to delete this item?')) return;
+
+        try {
+            const response = await fetch(`/api/food-items/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) throw new Error('Delete failed');
+
+            await fetchFoodItems();
+        } catch (error) {
+            console.error('Error deleting item:', error);
+            alert('Failed to delete item. Please try again.');
+        }
+    }
+
+    // Form submission
+    form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        submitButton.disabled = true;
+        buttonText.textContent = editingId ? 'Updating...' : 'Saving...';
+        loadingSpinner.classList.remove('hidden');
+
+        const formData = new FormData(form);
+        const data = {
+            name: formData.get('name'),
+            category: formData.get('category'),
+            quantity: parseInt(formData.get('quantity')),
+            price: parseInt(formData.get('price')),
+            unit: formData.get('unit'),
+            expiryDate: formData.get('expiryDate')
+        };
+
+        try {
+            const url = editingId ?
+                `/foodApi/food-items/${editingId}` :
+                '/foodApi/food-items';
+
+            const response = await fetch(url, {
+                method: editingId ? 'PUT' : 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            });
+
+            if (!response.ok) throw new Error('Save failed');
+            if(response.ok){
+                await fetchFoodItems();
+                closeModal();
+            }
+        } catch (error) {
+            console.error('Error saving item:', error);
+            alert('Failed to save item. Please try again.');
+        } finally {
+            submitButton.disabled = false;
+            buttonText.textContent = 'Save Item';
+            loadingSpinner.classList.remove('hidden');
+        }
+    });
+
+    // Close modal when clicking outside
+    modal.addEventListener('click', function(e) {
+        if (e.target === modal) closeModal();
+    });
+</script>
+</body>
+</html>

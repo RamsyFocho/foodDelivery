@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Setter
 @Getter
@@ -27,27 +28,42 @@ public class Order {
     @JsonBackReference
     private User user;
 
-    @ManyToOne
-    @JoinColumn(name = "food_id")
-    private Food food;
-
-    private Integer quantity;
-
     private LocalDate orderDate;
+    private String status;
+    private Double total;
 
-    public Order(long id, User user, Food food, Integer quantity, LocalDate orderDate) {
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+    private List<FoodOrder> foodOrder;
+
+    public Order() {
+    }
+
+    public Order(User user, LocalDate orderDate, String status, Double total, List<FoodOrder> foodOrder) {
+        this.user = user;
+        this.orderDate = orderDate;
+        this.status = status;
+        this.total = total;
+        this.foodOrder = foodOrder;
+    }
+
+    public Order(long id, User user, LocalDate orderDate, String status, Double total, List<FoodOrder> foodOrder) {
         Id = id;
         this.user = user;
-        this.food = food;
-        this.quantity = quantity;
         this.orderDate = orderDate;
+        this.status = status;
+        this.total = total;
+        this.foodOrder = foodOrder;
     }
 
-    public Order(User user, Food food, Integer quantity, LocalDate orderDate) {
+    public Order(User user, LocalDate orderDate, String status, Double total) {
         this.user = user;
-        this.food = food;
-        this.quantity = quantity;
         this.orderDate = orderDate;
+        this.status = status;
+        this.total = total;
     }
 
+    public Order(Double total, LocalDate orderDate) {
+        this.total = total;
+        this.orderDate = orderDate;
+    }
 }

@@ -24,6 +24,18 @@ public class FoodController {
         System.out.println("FoodController.getAllFoodItems");
         return ResponseEntity.ok( foodList );
     }
+    @GetMapping("/food-items/{id}")
+    @ResponseBody
+    public ResponseEntity<?> getFoodById(@PathVariable("id") Long foodId){
+        System.out.println("The id is "+foodId);
+        Food food = foodServices.getFoodById(foodId);
+        if(food != null){
+            System.out.println(food.getName());
+            return ResponseEntity.ok(food);
+        }
+        return null;
+    }
+
     @PostMapping("/food-items")
     @ResponseBody
     public ResponseEntity<?> addFoodItem(@RequestBody Food Newfood){
@@ -41,6 +53,18 @@ public class FoodController {
         }
         foodServices.addNewFood(Newfood);
         return ResponseEntity.ok("food sent");
+
+    }
+    @PutMapping("/food-items/{editingId}")
+    @ResponseBody
+    public ResponseEntity<?> updateFood(@PathVariable Long editingId, @RequestBody Food updateFood){
+        System.out.println("The food Id in the put is "+editingId);
+        boolean done = foodServices.updateFoodById(editingId,updateFood);
+        if(done){
+            System.out.println("updated?");
+            return ResponseEntity.ok("food updated");
+        }
+        return ResponseEntity.ok("food Not");
 
     }
 
