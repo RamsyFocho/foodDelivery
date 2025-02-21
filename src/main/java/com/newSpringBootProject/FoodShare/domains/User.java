@@ -19,6 +19,7 @@ public class User {
     @Email
     @NotBlank
     private String email;
+//    TODO: Implement phoneNumber
     @NotBlank
     private String password;
     @NotBlank

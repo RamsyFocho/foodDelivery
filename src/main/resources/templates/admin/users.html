@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Users - Food Distribution Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin/styles.css}">
+
+    <link rel="stylesheet" th:href="@{/fontAwesome-free-6.6.0-web/css/all.min.css}">
+    <script th:src="@{/fontAwesome-free-6.6.0-web/js/all.min.js}"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Mobile Menu Button -->
+    <button id="mobileMenuBtn" class="mobile-menu-btn fixed top-4 left-4 z-50">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="text-2xl font-bold">Admin Panel</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>Dashboard
+            </a>
+            <a href="orders.html" class="nav-item">
+                <i class="fas fa-shopping-cart"></i>Orders
+            </a>
+            <a href="users.html" class="nav-item active">
+                <i class="fas fa-users"></i>Users
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-box"></i>Inventory
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-file-alt"></i>Reports
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="header-title">Users Management</h1>
+            <div class="header-actions">
+                <div class="form-group">
+                    <input type="text" id="userSearch" placeholder="Search users..." class="px-4 py-2 border rounded-lg">
+                </div>
+                <button class="btn btn-primary" onclick="openAddUserModal()">
+                    <i class="fas fa-plus"></i>
+                    Add New User
+                </button>
+            </div>
+        </div>
+
+        <!-- User Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500">Total Users</p>
+                        <h3 class="text-2xl font-bold" id="totalUsers">0</h3>
+                    </div>
+                    <div class="text-blue-500">
+                        <i class="fas fa-users text-3xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500">Active Users</p>
+                        <h3 class="text-2xl font-bold" id="activeUsers">0</h3>
+                    </div>
+                    <div class="text-green-500">
+                        <i class="fas fa-user-check text-3xl"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500">New Users (This Month)</p>
+                        <h3 class="text-2xl font-bold" id="newUsers">0</h3>
+                    </div>
+                    <div class="text-purple-500">
+                        <i class="fas fa-user-plus text-3xl"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold">All Users</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Joined Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-500">
+                        Showing <span id="startRange">1</span> to <span id="endRange">10</span> of <span id="totalUsersCount">100</span> users
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary" onclick="previousPage()">Previous</button>
+                        <button class="btn btn-secondary" onclick="nextPage()">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit User Modal -->
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold" id="modalTitle">Add New User</h2>
+                <button onclick="closeUserModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <form id="userForm" class="space-y-4">
+                <div class="form-group">
+                    <label for="userName">Name</label>
+                    <input type="text" id="userName" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="userEmail">Email</label>
+                    <input type="email" id="userEmail" required class="form-control">
+                </div>
+                <div class="form-group">
+                    <label for="userRole">Role</label>
+                    <select id="userRole" required class="form-control">
+                        <option value="user">User</option>
+                        <option value="admin">Admin</option>
+                        <option value="manager">Manager</option>
+                    </select>
+                </div>
+                <div class="flex justify-end gap-3">
+                    <button type="button" onclick="closeUserModal()" class="btn btn-secondary">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save User</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Users page specific JavaScript
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let filteredUsers = [];
+        let editingUserId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchUsers();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('userSearch').addEventListener('input', filterUsers);
+            document.getElementById('userForm').addEventListener('submit', handleUserSubmit);
+            
+            // Mobile menu toggle
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                document.querySelector('.sidebar').classList.toggle('active');
+            });
+        }
+
+        async function fetchUsers() {
+            try {
+                const response = await fetch('http://localhost:8080/api/users');
+                const users = await response.json();
+                filteredUsers = users;
+                renderUsers();
+                updateUserStats(users);
+            } catch (error) {
+                console.error('Error fetching users:', error);
+                showError('Failed to load users');
+            }
+        }
+
+        function updateUserStats(users) {
+            const now = new Date();
+            const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+            
+            document.getElementById('totalUsers').textContent = users.length;
+            document.getElementById('activeUsers').textContent = users.filter(u => u.status === 'active').length;
+            document.getElementById('newUsers').textContent = users.filter(u => new Date(u.joinedDate) >= firstDayOfMonth).length;
+        }
+
+        function filterUsers() {
+            const searchTerm = document.getElementById('userSearch').value.toLowerCase();
+
+            filteredUsers = users.filter(user => 
+                user.name.toLowerCase().includes(searchTerm) ||
+                user.email.toLowerCase().includes(searchTerm)
+            );
+
+            currentPage = 1;
+            renderUsers();
+        }
+
+        function renderUsers() {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const usersToShow = filteredUsers.slice(start, end);
+
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = usersToShow.map(user => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="font-medium">#${user.id}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${user.name}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${user.email}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 py-1 text-xs font-medium rounded-full ${getRoleBadgeClass(user.role)}">
+                            ${user.role}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="status-badge status-${user.status}">
+                            ${user.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${formatDate(user.joinedDate)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex gap-2">
+                            <button class="btn btn-secondary" onclick="editUser(${user.id})">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-secondary text-red-600" onclick="deleteUser(${user.id})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Update pagination info
+            document.getElementById('startRange').textContent = start + 1;
+            document.getElementById('endRange').textContent = Math.min(end, filteredUsers.length);
+            document.getElementById('totalUsersCount').textContent = filteredUsers.length;
+        }
+
+        function getRoleBadgeClass(role) {
+            const classes = {
+                'admin': 'bg-red-100 text-red-800',
+                'manager': 'bg-blue-100 text-blue-800',
+                'user': 'bg-green-100 text-green-800'
+            };
+            return classes[role] || 'bg-gray-100 text-gray-800';
+        }
+
+        function openAddUserModal() {
+            editingUserId = null;
+            document.getElementById('modalTitle').textContent = 'Add New User';
+            document.getElementById('userForm').reset();
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function editUser(userId) {
+            const user = filteredUsers.find(u => u.id === userId);
+            if (user) {
+                editingUserId = userId;
+                document.getElementById('modalTitle').textContent = 'Edit User';
+                document.getElementById('userName').value = user.name;
+                document.getElementById('userEmail').value = user.email;
+                document.getElementById('userRole').value = user.role;
+                document.getElementById('userModal').classList.add('active');
+            }
+        }
+
+        async function handleUserSubmit(e) {
+            e.preventDefault();
+
+            const userData = {
+                name: document.getElementById('userName').value,
+                email: document.getElementById('userEmail').value,
+                role: document.getElementById('userRole').value
+            };
+
+            try {
+                const url = editingUserId 
+                    ? `http://localhost:8080/api/users/${editingUserId}`
+                    : 'http://localhost:8080/api/users';
+                
+                const response = await fetch(url, {
+                    method: editingUserId ? 'PUT' : 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(userData)
+                });
+
+                if (response.ok) {
+                    closeUserModal();
+                    fetchUsers();
+                    showSuccess(`User successfully ${editingUserId ? 'updated' : 'added'}`);
+                } else {
+                    throw new Error('Failed to save user');
+                }
+            } catch (error) {
+                console.error('Error saving user:', error);
+                showError('Failed to save user');
+            }
+        }
+
+        async function deleteUser(userId) {
+            if (confirm('Are you sure you want to delete this user?')) {
+                try {
+                    const response = await fetch(`http://localhost:8080/api/users/${userId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        fetchUsers();
+                        showSuccess('User successfully deleted');
+                    } else {
+                        throw new Error('Failed to delete user');
+                    }
+                } catch (error) {
+                    console.error('Error deleting user:', error);
+                    showError('Failed to delete user');
+                }
+            }
+        }
+
+        function closeUserModal() {
+            document.getElementById('userModal').classList.remove('active');
+            document.getElementById('userForm').reset();
+            editingUserId = null;
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderUsers();
+            }
+        }
+
+        function nextPage() {
+            const maxPage = Math.ceil(filteredUsers.length / itemsPerPage);
+            if (currentPage < maxPage) {
+                currentPage++;
+                renderUsers();
+            }
+        }
+
+        // Utility functions for notifications
+        function showSuccess(message) {
+            // Implement your success notification
+            alert(message);
+        }
+
+        function showError(message) {
+            // Implement your error notification
+            alert(message);
+        }
+    </script>
+</body>
+</html>

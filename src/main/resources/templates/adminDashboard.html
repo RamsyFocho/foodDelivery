@@ -11,8 +11,6 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <style>
-        /* Previous styles remain the same */
-
         .dashboard-card {
             transition: transform 0.2s;
         }
@@ -24,49 +22,122 @@
         .stat-card {
             @apply bg-white rounded-lg p-6 shadow-sm hover:shadow-md transition-all;
         }
+
+        /* Mobile sidebar styles */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+                z-index: 40;
+            }
+            
+            .sidebar.active {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                width: 100%;
+            }
+        }
+
+        /* Chart responsiveness */
+        .chart-container {
+            position: relative;
+            height: 40vh;
+            max-height: 400px;
+            min-height: 250px;
+            width: 100%;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 50;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .slide-in {
+            transform: translateY(20px);
+            transition: transform 0.3s;
+        }
+
+        .modal.active .slide-in {
+            transform: translateY(0);
+        }
+
+        /* Notification panel animation */
+        #notificationPanel {
+            transition: transform 0.3s ease-in-out;
+            z-index: 30;
+        }
     </style>
 </head>
 <body class="bg-gray-50">
+<!-- Mobile Menu Button -->
+<div class="fixed top-4 left-4 z-50 block md:hidden">
+    <button id="sidebarToggle" class="p-2 bg-gray-900 text-white rounded-md">
+        <i class="fas fa-bars"></i>
+    </button>
+</div>
+
 <!-- Sidebar -->
-<div class="fixed inset-y-0 left-0 w-64 bg-gray-900 text-white">
-    <div class="p-6">
+<div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 bg-gray-900 text-white">
+    <div class="p-6 flex items-center justify-between">
         <h1 class="text-2xl font-bold">Admin Panel</h1>
+        <button id="closeSidebar" class="p-2 text-white md:hidden">
+            <i class="fas fa-times"></i>
+        </button>
     </div>
     <nav class="mt-6">
-        <a href="#dashboard" class="block px-6 py-3 hover:bg-gray-800 active">
+        <a th:href="@{/admin/dashboard}" class="flex items-center px-6 py-3 hover:bg-gray-800 active">
             <i class="fas fa-chart-line mr-3"></i>Dashboard
         </a>
-        <a href="#inventory" class="block px-6 py-3 hover:bg-gray-800">
+        <a th:href="@{/inventory}" class="flex items-center px-6 py-3 hover:bg-gray-800">
             <i class="fas fa-box mr-3"></i>Inventory
         </a>
-        <a href="#orders" class="block px-6 py-3 hover:bg-gray-800">
+        <a href="#orders" class="flex items-center px-6 py-3 hover:bg-gray-800">
             <i class="fas fa-shopping-cart mr-3"></i>Orders
         </a>
-        <a href="#users" class="block px-6 py-3 hover:bg-gray-800">
+        <a href="#users" class="flex items-center px-6 py-3 hover:bg-gray-800">
             <i class="fas fa-users mr-3"></i>Users
         </a>
-        <a href="#reports" class="block px-6 py-3 hover:bg-gray-800">
+        <a href="#reports" class="flex items-center px-6 py-3 hover:bg-gray-800">
             <i class="fas fa-file-alt mr-3"></i>Reports
         </a>
-        <a href="#messages" class="block px-6 py-3 hover:bg-gray-800">
+        <a href="#messages" class="flex items-center px-6 py-3 hover:bg-gray-800">
             <i class="fas fa-envelope mr-3"></i>Messages
         </a>
     </nav>
 </div>
 
 <!-- Main Content -->
-<div class="ml-64 p-8">
+<div id="mainContent" class="main-content transition-all duration-300 ml-0 md:ml-64 p-4 md:p-8">
     <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
-        <h1 class="text-3xl font-bold text-gray-900">Dashboard Overview</h1>
-        <div class="flex items-center gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 mt-12 md:mt-0">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-0">Dashboard Overview</h1>
+        <div class="flex flex-wrap items-center gap-4">
             <button onclick="generateReport()" class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2">
                 <i class="fas fa-file-pdf"></i>
-                Generate Report
+                <span class="hidden sm:inline">Generate Report</span>
             </button>
             <div class="relative">
                 <button onclick="toggleNotifications()" class="p-2 text-gray-600 hover:text-gray-900">
-                    <i class="fas fa-bell"></i>
+                    <i class="fas fa-bell text-xl"></i>
                     <span class="absolute top-0 right-0 bg-red-500 text-white rounded-full w-4 h-4 text-xs flex items-center justify-center">3</span>
                 </button>
             </div>
@@ -74,15 +145,15 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
         <div class="stat-card">
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500">Total Orders</p>
-                    <h3 class="text-2xl font-bold" id="totalOrders">0</h3>
+                    <h3 class="text-xl md:text-2xl font-bold" id="totalOrders">0</h3>
                 </div>
                 <div class="text-blue-500">
-                    <i class="fas fa-shopping-cart text-3xl"></i>
+                    <i class="fas fa-shopping-cart text-2xl md:text-3xl"></i>
                 </div>
             </div>
             <p class="text-green-500 text-sm mt-2">
@@ -95,10 +166,10 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500">Revenue</p>
-                    <h3 class="text-2xl font-bold" id="totalRevenue">0 FCFA</h3>
+                    <h3 class="text-xl md:text-2xl font-bold" id="totalRevenue">0 FCFA</h3>
                 </div>
                 <div class="text-green-500">
-                    <i class="fas fa-dollar-sign text-3xl"></i>
+                    <i class="fas fa-dollar-sign text-2xl md:text-3xl"></i>
                 </div>
             </div>
             <p class="text-green-500 text-sm mt-2">
@@ -111,10 +182,10 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500">Active Users</p>
-                    <h3 class="text-2xl font-bold" id="activeUsers">0</h3>
+                    <h3 class="text-xl md:text-2xl font-bold" id="activeUsers">0</h3>
                 </div>
                 <div class="text-purple-500">
-                    <i class="fas fa-users text-3xl"></i>
+                    <i class="fas fa-users text-2xl md:text-3xl"></i>
                 </div>
             </div>
             <p class="text-green-500 text-sm mt-2">
@@ -127,10 +198,10 @@
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-500">Low Stock Items</p>
-                    <h3 class="text-2xl font-bold" id="lowStockItems">0</h3>
+                    <h3 class="text-xl md:text-2xl font-bold" id="lowStockItems">0</h3>
                 </div>
                 <div class="text-red-500">
-                    <i class="fas fa-exclamation-triangle text-3xl"></i>
+                    <i class="fas fa-exclamation-triangle text-2xl md:text-3xl"></i>
                 </div>
             </div>
             <p class="text-red-500 text-sm mt-2">
@@ -142,41 +213,47 @@
 
     <!-- Charts Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="bg-white p-4 md:p-6 rounded-lg shadow-sm">
             <h3 class="text-lg font-semibold mb-4">Sales Overview</h3>
-            <canvas id="salesChart"></canvas>
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow-sm">
+        <div class="bg-white p-4 md:p-6 rounded-lg shadow-sm">
             <h3 class="text-lg font-semibold mb-4">Popular Categories</h3>
-            <canvas id="categoryChart"></canvas>
+            <div class="chart-container">
+                <canvas id="categoryChart"></canvas>
+            </div>
         </div>
     </div>
 
     <!-- Recent Orders Table -->
     <div class="bg-white rounded-lg shadow-sm overflow-hidden mb-8">
-        <div class="p-6 border-b border-gray-200">
+        <div class="p-4 md:p-6 border-b border-gray-200">
             <h3 class="text-lg font-semibold">Recent Orders</h3>
         </div>
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-            <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-            </tr>
-            </thead>
-            <tbody id="recentOrdersTable" class="bg-white divide-y divide-gray-200">
-            <!-- Dynamically populated -->
-            </tbody>
-        </table>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                    <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                </tr>
+                </thead>
+                <tbody id="recentOrdersTable" class="bg-white divide-y divide-gray-200">
+                <!-- Dynamically populated -->
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 
 <!-- Notification Panel -->
-<div id="notificationPanel" class="fixed right-0 top-0 h-full w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out">
+<div id="notificationPanel" class="fixed right-0 top-0 h-full w-screen md:w-80 bg-white shadow-lg transform translate-x-full transition-transform duration-300 ease-in-out z-40">
     <div class="p-6 border-b border-gray-200">
         <div class="flex justify-between items-center">
             <h3 class="text-lg font-semibold">Notifications</h3>
@@ -185,15 +262,15 @@
             </button>
         </div>
     </div>
-    <div class="p-4 space-y-4" id="notificationList">
+    <div class="p-4 space-y-4 overflow-y-auto max-h-screen" id="notificationList">
         <!-- Dynamically populated -->
     </div>
 </div>
 
 <!-- Report Generation Modal -->
 <div id="reportModal" class="modal">
-    <div class="bg-white rounded-lg p-6 w-full max-w-md slide-in">
-        <h2 class="text-2xl font-bold mb-4">Generate Report</h2>
+    <div class="bg-white rounded-lg p-6 w-full max-w-md mx-4 slide-in">
+        <h2 class="text-xl md:text-2xl font-bold mb-4">Generate Report</h2>
         <form id="reportForm" class="space-y-4">
             <div>
                 <label class="block text-sm font-medium text-gray-700">Report Type</label>
@@ -205,7 +282,7 @@
             </div>
             <div>
                 <label class="block text-sm font-medium text-gray-700">Date Range</label>
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <input type="date" id="startDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                     <input type="date" id="endDate" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 </div>
@@ -222,40 +299,51 @@
     </div>
 </div>
 
+<!-- Overlay for mobile when sidebar is open -->
+<div id="sidebarOverlay" class="fixed inset-0 bg-black bg-opacity-50 z-30 hidden md:hidden"></div>
+
 <script th:inline="javascript">
-    // Initialize charts and data
+    // Mobile sidebar toggle
     document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const closeSidebar = document.getElementById('closeSidebar');
+        const sidebarOverlay = document.getElementById('sidebarOverlay');
+        
+        function openSidebar() {
+            sidebar.classList.add('active');
+            sidebarOverlay.classList.remove('hidden');
+        }
+        
+        function closeSidebarFunc() {
+            sidebar.classList.remove('active');
+            sidebarOverlay.classList.add('hidden');
+        }
+        
+        sidebarToggle.addEventListener('click', openSidebar);
+        closeSidebar.addEventListener('click', closeSidebarFunc);
+        sidebarOverlay.addEventListener('click', closeSidebarFunc);
+        
+        // Handle window resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth >= 768) {
+                sidebar.classList.remove('active');
+                sidebarOverlay.classList.add('hidden');
+            }
+        });
+        
         fetchDashboardData();
         initializeCharts();
         fetchRecentOrders();
         fetchNotifications();
     });
 
-    // Fetch dashboard data
-    async function fetchDashboardData() {
-        try {
-            const response = await fetch('/api/dashboard/stats');
-            const data = await response.json();
-            updateDashboardStats(data);
-        } catch (error) {
-            console.error('Error fetching dashboard data:', error);
-        }
-    }
-
-    // Update dashboard statistics
-    function updateDashboardStats(data) {
-        document.getElementById('totalOrders').textContent = data.totalOrders;
-        document.getElementById('totalRevenue').textContent = `${data.totalRevenue.toLocaleString()} FCFA`;
-        document.getElementById('activeUsers').textContent = data.activeUsers;
-        document.getElementById('lowStockItems').textContent = data.lowStockItems;
-
-        document.getElementById('orderGrowth').textContent = `${data.orderGrowth}%`;
-        document.getElementById('revenueGrowth').textContent = `${data.revenueGrowth}%`;
-        document.getElementById('userGrowth').textContent = `${data.userGrowth}%`;
-    }
-
-    // Initialize charts
+    // Responsive charts setup
     function initializeCharts() {
+        // Chart.js global defaults for responsiveness
+        Chart.defaults.responsive = true;
+        Chart.defaults.maintainAspectRatio = false;
+        
         // Sales Chart
         const salesCtx = document.getElementById('salesChart').getContext('2d');
         new Chart(salesCtx, {
@@ -266,12 +354,49 @@
                     label: 'Sales',
                     data: [12, 19, 3, 5, 2, 3],
                     borderColor: 'rgb(59, 130, 246)',
-                    tension: 0.1
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.1,
+                    fill: true
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            boxWidth: 12,
+                            usePointStyle: true,
+                            padding: 20
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        padding: 10,
+                        bodySpacing: 5
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            drawBorder: false
+                        },
+                        ticks: {
+                            precision: 0
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        }
+                    }
+                },
+                interaction: {
+                    intersect: false,
+                    mode: 'index'
+                }
             }
         });
 
@@ -293,10 +418,69 @@
                 }]
             },
             options: {
-                responsive: true,
-                maintainAspectRatio: false
+                plugins: {
+                    legend: {
+                        position: 'right',
+                        labels: {
+                            boxWidth: 12,
+                            usePointStyle: true,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        padding: 10
+                    }
+                },
+                cutout: '65%',
+                layout: {
+                    padding: 10
+                }
             }
         });
+        
+        // Handle chart resize on window resize
+        window.addEventListener('resize', function() {
+            setTimeout(function() {
+                document.querySelectorAll('canvas').forEach(canvas => {
+                    if (canvas.chart) {
+                        canvas.chart.resize();
+                    }
+                });
+            }, 300);
+        });
+    }
+
+    // Fetch dashboard data
+    async function fetchDashboardData() {
+        try {
+            const response = await fetch('/api/dashboard/stats');
+            const data = await response.json();
+            updateDashboardStats(data);
+        } catch (error) {
+            console.error('Error fetching dashboard data:', error);
+            // Mock data for development
+            updateDashboardStats({
+                totalOrders: 185,
+                totalRevenue: 2450000,
+                activeUsers: 124,
+                lowStockItems: 8,
+                orderGrowth: 12.5,
+                revenueGrowth: 15.2,
+                userGrowth: 8.7
+            });
+        }
+    }
+
+    // Update dashboard statistics
+    function updateDashboardStats(data) {
+        document.getElementById('totalOrders').textContent = data.totalOrders;
+        document.getElementById('totalRevenue').textContent = `${data.totalRevenue.toLocaleString()} FCFA`;
+        document.getElementById('activeUsers').textContent = data.activeUsers;
+        document.getElementById('lowStockItems').textContent = data.lowStockItems;
+
+        document.getElementById('orderGrowth').textContent = `${data.orderGrowth}%`;
+        document.getElementById('revenueGrowth').textContent = `${data.revenueGrowth}%`;
+        document.getElementById('userGrowth').textContent = `${data.userGrowth}%`;
     }
 
     // Fetch recent orders
@@ -307,6 +491,13 @@
             renderRecentOrders(orders);
         } catch (error) {
             console.error('Error fetching recent orders:', error);
+            // Mock data for development
+            renderRecentOrders([
+                {id: '1001', customerName: 'Alice Johnson', itemCount: 5, total: 25000, status: 'completed', date: '2025-02-15'},
+                {id: '1002', customerName: 'Bob Smith', itemCount: 3, total: 18500, status: 'processing', date: '2025-02-18'},
+                {id: '1003', customerName: 'Carol White', itemCount: 7, total: 42000, status: 'pending', date: '2025-02-20'},
+                {id: '1004', customerName: 'David Brown', itemCount: 2, total: 12500, status: 'cancelled', date: '2025-02-19'}
+            ]);
         }
     }
 
@@ -315,24 +506,24 @@
         const tbody = document.getElementById('recentOrdersTable');
         tbody.innerHTML = orders.map(order => `
             <tr class="hover:bg-gray-50">
-                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                     #${order.id}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     ${order.customerName}
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     ${order.itemCount} items
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     ${order.total.toLocaleString()} FCFA
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}">
                         ${order.status}
                     </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     ${new Date(order.date).toLocaleDateString()}
                 </td>
             </tr>
@@ -354,6 +545,12 @@
     function toggleNotifications() {
         const panel = document.getElementById('notificationPanel');
         panel.classList.toggle('translate-x-full');
+        if (!panel.classList.contains('translate-x-full')) {
+            // Focus trap for accessibility
+            setTimeout(() => {
+                panel.querySelector('button').focus();
+            }, 100);
+        }
     }
 
     async function fetchNotifications() {
@@ -363,6 +560,12 @@
             renderNotifications(notifications);
         } catch (error) {
             console.error('Error fetching notifications:', error);
+            // Mock data for development
+            renderNotifications([
+                {type: 'order', title: 'New Order', message: 'Order #1005 has been placed', date: '2025-02-21T09:30:00'},
+                {type: 'alert', title: 'Low Stock Alert', message: 'Rice is running low (5 units remaining)', date: '2025-02-21T08:15:00'},
+                {type: 'user', title: 'New User Registration', message: 'Emma Watson has created an account', date: '2025-02-20T16:45:00'}
+            ]);
         }
     }
 
@@ -377,11 +580,30 @@
                     <div class="ml-3 w-0 flex-1">
                         <p class="text-sm font-medium text-gray-900">${notification.title}</p>
                         <p class="mt-1 text-sm text-gray-500">${notification.message}</p>
-                        <p class="mt-1 text-xs text-gray-400">${new Date(notification.date).toLocaleString()}</p>
+                        <p class="mt-1 text-xs text-gray-400">${formatDate(notification.date)}</p>
                     </div>
                 </div>
             </div>
         `).join('');
+    }
+
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        const now = new Date();
+        const diffMs = now - date;
+        const diffMins = Math.floor(diffMs / 60000);
+        const diffHours = Math.floor(diffMins / 60);
+        const diffDays = Math.floor(diffHours / 24);
+        
+        if (diffMins < 60) {
+            return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+        } else if (diffHours < 24) {
+            return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+        } else if (diffDays < 7) {
+            return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+        } else {
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }
     }
 
     function getNotificationIcon(type) {
@@ -407,6 +629,13 @@
     // Report generation functions
     function generateReport() {
         document.getElementById('reportModal').classList.add('active');
+        // Set default dates for better UX
+        const today = new Date();
+        const lastMonth = new Date();
+        lastMonth.setMonth(today.getMonth() - 1);
+        
+        document.getElementById('startDate').valueAsDate = lastMonth;
+        document.getElementById('endDate').valueAsDate = today;
     }
 
     function closeReportModal() {
@@ -419,6 +648,17 @@
         const reportType = document.getElementById('reportType').value;
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
+
+        // Validate dates
+        if (!startDate || !endDate) {
+            alert('Please select both start and end dates');
+            return;
+        }
+        
+        if (new Date(endDate) < new Date(startDate)) {
+            alert('End date cannot be earlier than start date');
+            return;
+        }
 
         try {
             const response = await fetch('/api/reports/generate', {
@@ -449,6 +689,26 @@
         } catch (error) {
             console.error('Error generating report:', error);
             alert('Failed to generate report. Please try again.');
+        }
+    });
+
+    // Close modal when clicking outside
+    document.getElementById('reportModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeReportModal();
+        }
+    });
+
+    // Escape key handler
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (!document.getElementById('reportModal').classList.contains('active')) {
+                if (!document.getElementById('notificationPanel').classList.contains('translate-x-full')) {
+                    toggleNotifications();
+                }
+            } else {
+                closeReportModal();
+            }
         }
     });
 </script>

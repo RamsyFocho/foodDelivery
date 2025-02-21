@@ -17,7 +17,18 @@ public class pages{
     }
     @GetMapping("/admin/dashboard")
     public String adminDashboardPage(){
-//        return "adminDashboard.html";
-        return "foodMs.html";
+        return "adminDashboard.html";
+    }
+    @GetMapping("/inventory")
+    public String inventoryPage(){
+        return "inventory.html";
+    }
+    @GetMapping("/users")
+    public String userMsPage(){
+        return "admin/users.html";
+    }
+    @GetMapping("/orders")
+    public String orderMsPage(){
+        return "admin/order.html";
     }
 }

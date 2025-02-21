@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Orders - Food Distribution Admin</title>
+    <link rel="stylesheet" th:href="@{/css/admin/styles.css}">
+    
+    <link rel="stylesheet" th:href="@{/fontAwesome-free-6.6.0-web/css/all.min.css}">
+    <script th:src="@{/fontAwesome-free-6.6.0-web/js/all.min.js}"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Mobile Menu Button -->
+    <button id="mobileMenuBtn" class="mobile-menu-btn fixed top-4 left-4 z-50">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="text-2xl font-bold">Admin Panel</h1>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="index.html" class="nav-item">
+                <i class="fas fa-chart-line"></i>Dashboard
+            </a>
+            <a href="orders.html" class="nav-item active">
+                <i class="fas fa-shopping-cart"></i>Orders
+            </a>
+            <a href="users.html" class="nav-item">
+                <i class="fas fa-users"></i>Users
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-box"></i>Inventory
+            </a>
+            <a href="#" class="nav-item">
+                <i class="fas fa-file-alt"></i>Reports
+            </a>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="header">
+            <h1 class="header-title">Orders Management</h1>
+            <div class="header-actions">
+                <div class="form-group">
+                    <input type="text" id="orderSearch" placeholder="Search orders..." class="px-4 py-2 border rounded-lg">
+                </div>
+                <button class="btn btn-primary" onclick="exportOrders()">
+                    <i class="fas fa-download"></i>
+                    Export Orders
+                </button>
+            </div>
+        </div>
+
+        <!-- Order Filters -->
+        <div class="bg-white p-4 rounded-lg shadow-sm mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="form-group">
+                    <label>Status</label>
+                    <select id="statusFilter" class="form-control">
+                        <option value="">All Status</option>
+                        <option value="pending">Pending</option>
+                        <option value="processing">Processing</option>
+                        <option value="completed">Completed</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Date Range</label>
+                    <input type="date" id="dateFilter" class="form-control">
+                </div>
+                <div class="form-group">
+                    <label>Min Amount</label>
+                    <input type="number" id="minAmountFilter" class="form-control" placeholder="Min amount">
+                </div>
+                <div class="form-group">
+                    <label>Max Amount</label>
+                    <input type="number" id="maxAmountFilter" class="form-control" placeholder="Max amount">
+                </div>
+            </div>
+        </div>
+
+        <!-- Orders Table -->
+        <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="p-6 border-b border-gray-200">
+                <h3 class="text-lg font-semibold">All Orders</h3>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- Dynamically populated -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Pagination -->
+            <div class="p-4 border-t border-gray-200">
+                <div class="flex items-center justify-between">
+                    <div class="text-sm text-gray-500">
+                        Showing <span id="startRange">1</span> to <span id="endRange">10</span> of <span id="totalOrders">100</span> orders
+                    </div>
+                    <div class="flex gap-2">
+                        <button class="btn btn-secondary" onclick="previousPage()">Previous</button>
+                        <button class="btn btn-secondary" onclick="nextPage()">Next</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Details Modal -->
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold">Order Details</h2>
+                <button onclick="closeOrderModal()" class="text-gray-500 hover:text-gray-700">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div id="orderDetails">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Orders page specific JavaScript
+        let currentPage = 1;
+        const itemsPerPage = 10;
+        let filteredOrders = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchOrders();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            document.getElementById('orderSearch').addEventListener('input', filterOrders);
+            document.getElementById('statusFilter').addEventListener('change', filterOrders);
+            document.getElementById('dateFilter').addEventListener('change', filterOrders);
+            document.getElementById('minAmountFilter').addEventListener('input', filterOrders);
+            document.getElementById('maxAmountFilter').addEventListener('input', filterOrders);
+            
+            // Mobile menu toggle
+            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+                document.querySelector('.sidebar').classList.toggle('active');
+            });
+        }
+
+        async function fetchOrders() {
+            try {
+                const response = await fetch('http://localhost:8080/api/orders');
+                const orders = await response.json();
+                filteredOrders = orders;
+                renderOrders();
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+                showError('Failed to load orders');
+            }
+        }
+
+        function filterOrders() {
+            const searchTerm = document.getElementById('orderSearch').value.toLowerCase();
+            const status = document.getElementById('statusFilter').value;
+            const date = document.getElementById('dateFilter').value;
+            const minAmount = document.getElementById('minAmountFilter').value;
+            const maxAmount = document.getElementById('maxAmountFilter').value;
+
+            filteredOrders = orders.filter(order => {
+                const matchesSearch = order.customerName.toLowerCase().includes(searchTerm) ||
+                                    order.id.toString().includes(searchTerm);
+                const matchesStatus = !status || order.status === status;
+                const matchesDate = !date || new Date(order.date).toLocaleDateString() === new Date(date).toLocaleDateString();
+                const matchesAmount = (!minAmount || order.total >= minAmount) &&
+                                    (!maxAmount || order.total <= maxAmount);
+
+                return matchesSearch && matchesStatus && matchesDate && matchesAmount;
+            });
+
+            currentPage = 1;
+            renderOrders();
+        }
+
+        function renderOrders() {
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const ordersToShow = filteredOrders.slice(start, end);
+
+            const tbody = document.getElementById('ordersTableBody');
+            tbody.innerHTML = ordersToShow.map(order => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="font-medium">#${order.id}</span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${order.customerName}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${order.itemCount} items
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${formatCurrency(order.total)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="status-badge status-${order.status.toLowerCase()}">
+                            ${order.status}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        ${formatDate(order.date)}
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <button class="btn btn-secondary" onclick="viewOrderDetails(${order.id})">
+                            View Details
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Update pagination info
+            document.getElementById('startRange').textContent = start + 1;
+            document.getElementById('endRange').textContent = Math.min(end, filteredOrders.length);
+            document.getElementById('totalOrders').textContent = filteredOrders.length;
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderOrders();
+            }
+        }
+
+        function nextPage() {
+            const maxPage = Math.ceil(filteredOrders.length / itemsPerPage);
+            if (currentPage < maxPage) {
+                currentPage++;
+                renderOrders();
+            }
+        }
+
+        function viewOrderDetails(orderId) {
+            // Implement order details view
+            const order = filteredOrders.find(o => o.id === orderId);
+            if (order) {
+                document.getElementById('orderDetails').innerHTML = `
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-medium text-gray-500">Order ID</h4>
+                                <p>#${order.id}</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-500">Date</h4>
+                                <p>${formatDate(order.date)}</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-500">Customer</h4>
+                                <p>${order.customerName}</p>
+                            </div>
+                            <div>
+                                <h4 class="font-medium text-gray-500">Status</h4>
+                                <span class="status-badge status-${order.status.toLowerCase()}">${order.status}</span>
+                            </div>
+                        </div>
+                        <div class="mt-4">
+                            <h4 class="font-medium text-gray-500 mb-2">Items</h4>
+                            <table class="w-full">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Item</th>
+                                        <th class="text-right">Quantity</th>
+                                        <th class="text-right">Price</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${order.items.map(item => `
+                                        <tr>
+                                            <td>${item.name}</td>
+                                            <td class="text-right">${item.quantity}</td>
+                                            <td class="text-right">${formatCurrency(item.price)}</td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                                <tfoot>
+                                    <tr>
+                                        <td colspan="2" class="text-right font-medium">Total:</td>
+                                        <td class="text-right font-medium">${formatCurrency(order.total)}</td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+                    </div>
+                `;
+                document.getElementById('orderModal').classList.add('active');
+            }
+        }
+
+        function closeOrderModal() {
+            document.getElementById('orderModal').classList.remove('active');
+        }
+
+        function exportOrders() {
+            // Implement export functionality
+            const csv = filteredOrders.map(order => {
+                return `${order.id},${order.customerName},${order.itemCount},${order.total},${order.status},${formatDate(order.date)}`;
+            }).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `orders-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+    </script>
+</body>
+</html>
