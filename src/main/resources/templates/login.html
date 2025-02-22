@@ -228,6 +228,12 @@
                             }else{
                                 window.location = `/user/dashboard`;
                             }
+                        }else{
+                            if(result.message == "email"){
+                                alert("User not found");
+                            }else{
+                                alert("Incorrect password");
+                            }
                         }
 
                     } else {

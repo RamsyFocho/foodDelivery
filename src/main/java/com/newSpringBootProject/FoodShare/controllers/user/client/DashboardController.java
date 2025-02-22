@@ -1,5 +1,6 @@
 package com.newSpringBootProject.FoodShare.controllers.user.client;
 
+import com.newSpringBootProject.FoodShare.domains.Order;
 import com.newSpringBootProject.FoodShare.domains.User;
 import com.newSpringBootProject.FoodShare.services.FoodServices;
 import com.newSpringBootProject.FoodShare.services.OrderService;
@@ -9,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+
+import java.util.List;
 
 @Controller
 public class DashboardController {
@@ -31,7 +34,7 @@ public class DashboardController {
         model.addAttribute("user", user);
         model.addAttribute("activeOrders", orderService.findActiveOrders(user).size());
         model.addAttribute("completedOrders", orderService.findCompletedOrders(user).size());
-        model.addAttribute("availableItems", foodService.getAllFoodItems());
+        model.addAttribute("availableItems", foodService.getAllFoodItemsWithQuantity());
         model.addAttribute("orders", orderService.findByUser(user));
         return "clientDashboard.html";
     }

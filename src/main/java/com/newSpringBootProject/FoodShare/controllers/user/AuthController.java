@@ -31,7 +31,7 @@ public class AuthController {
         System.out.println(loginRequest.getPassword());
         User user = userServices.getUserByEmail(loginRequest.getEmail());
         if(user == null){
-//            TODO: User not found
+//            sou
             return ResponseEntity.ok(Map.of("status","failed","message","email" ));
 
         }else if(Objects.equals(user.getPassword(), loginRequest.getPassword())){

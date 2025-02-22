@@ -15,7 +15,12 @@ public class FoodServices {
     private FoodRepository foodRepository;
 
     public List<Food> getAllFoodItems() {
+
         return foodRepository.findAll();
+    }
+    public List<Food> getAllFoodItemsWithQuantity() {
+
+        return foodRepository.findAllByQuantity();
     }
 
     public void addNewFood(Food newfood) {
