@@ -254,7 +254,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap flex flex-row" th:each="foodOrder : ${order.foodOrder}">
                                     <span
                                         class="py-2 inline-flex text-xs leading-5 font-semibold rounded-full text-grey-800"
-                                        th:text="${foodOrder.food.quantity} +'x'+ ${foodOrder.food.name}">
+                                        th:text="${foodOrder.quantity} +'x'+ ${foodOrder.food.name}">
                                         
                                     </span>
                                 </td>

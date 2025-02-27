@@ -24,6 +24,9 @@ public class OrderService {
     public List<Order> findActiveOrders(User user) {
         return orderRepository.findByUserAndStatus(user, "ACTIVE");
     }
+    public List<Order> getAllOrder(){
+        return orderRepository.findAll();
+    }
     public List<Order> findCompletedOrders(User user) {
         return orderRepository.findByUserAndStatus(user, "COMPLETED");
     }

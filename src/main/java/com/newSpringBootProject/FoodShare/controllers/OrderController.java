@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
-@RequestMapping("api/orders")
+@RequestMapping("/api/orders")
 public class OrderController {
     @Autowired
     private OrderService orderService;
@@ -65,6 +65,15 @@ public class OrderController {
 
 //        return ResponseEntity.ok(orderService.addOrder(order));
         return ResponseEntity.ok("test");
+    }
+    @GetMapping("/recent")
+    public ResponseEntity<?> getOrders(){
+        List<Order> order = orderService.getAllOrder();
+        for(Order or:order){
+            System.out.println(or.getUser().getName());
+//            or.getUser().getName();
+        }
+        return ResponseEntity.ok(orderService.getAllOrder());
     }
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrder(@PathVariable Long id) {

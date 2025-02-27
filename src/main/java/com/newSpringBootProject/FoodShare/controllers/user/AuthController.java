@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.Map;
 import java.util.Objects;
 
@@ -60,8 +61,8 @@ public class AuthController {
         newUser.setName(registerUser.getName());
         newUser.setEmail(registerUser.getEmail());
         newUser.setPassword(registerUser.getPassword());
-
         newUser.setRole("client");
+        newUser.setCreatedDate(LocalDate.now());
 
         boolean done = userServices.RegisterUser(newUser);
         if(done){

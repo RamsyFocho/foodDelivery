@@ -13,4 +13,6 @@ public interface FoodRepository extends JpaRepository<Food,Long> {
     Optional<Food> findByName(String name);
     @Query("Select f from Food f where f.quantity>0")
     List<Food> findAllByQuantity();
+
+    long countByQuantityLessThan(int i);
 }

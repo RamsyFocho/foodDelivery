@@ -1,8 +1,6 @@
 package com.newSpringBootProject.FoodShare.domains;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,16 +14,18 @@ import java.util.List;
 @Table(name = "`order`") // Escapes the reserved keyword
 @JsonIdentityInfo(
         generator = ObjectIdGenerators.PropertyGenerator.class,
-        property = "Id"
+        property = "id"
 )
+//@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long Id;
+    private long id;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
-    @JsonBackReference
+//    @JsonBackReference("user_id")  // Prevent serialization of the user in this object
+//    @JsonBackReference
     private User user;
 
     private LocalDate orderDate;
@@ -47,7 +47,7 @@ public class Order {
     }
 
     public Order(long id, User user, LocalDate orderDate, String status, Double total, List<FoodOrder> foodOrder) {
-        Id = id;
+        this.id = id;
         this.user = user;
         this.orderDate = orderDate;
         this.status = status;

@@ -36,6 +36,8 @@ public class DashboardController {
         model.addAttribute("completedOrders", orderService.findCompletedOrders(user).size());
         model.addAttribute("availableItems", foodService.getAllFoodItemsWithQuantity());
         model.addAttribute("orders", orderService.findByUser(user));
+        List<Order> order = orderService.findByUser(user);
+
         return "clientDashboard.html";
     }
 }
