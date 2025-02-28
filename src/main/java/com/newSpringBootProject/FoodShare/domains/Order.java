@@ -29,7 +29,7 @@ public class Order {
     private User user;
 
     private LocalDate orderDate;
-    private String status;
+    private String status;//pending, processing, completed, cancelled
     private Double total;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)

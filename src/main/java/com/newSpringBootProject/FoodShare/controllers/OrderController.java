@@ -4,10 +4,7 @@ import com.newSpringBootProject.FoodShare.domains.Food;
 import com.newSpringBootProject.FoodShare.domains.FoodOrder;
 import com.newSpringBootProject.FoodShare.domains.Order;
 import com.newSpringBootProject.FoodShare.domains.User;
-import com.newSpringBootProject.FoodShare.services.FoodOrderService;
-import com.newSpringBootProject.FoodShare.services.FoodServices;
-import com.newSpringBootProject.FoodShare.services.OrderService;
-import com.newSpringBootProject.FoodShare.services.UserServices;
+import com.newSpringBootProject.FoodShare.services.*;
 import com.newSpringBootProject.FoodShare.webdomains.OrderItems;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -29,12 +27,15 @@ public class OrderController {
     private FoodServices foodServices;
     @Autowired
     private FoodOrderService foodOrderService;
+    @Autowired
+    private SmsService smsService;
 
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody List<OrderItems> order, HttpSession session) {
         Long clientId = (Long)session.getAttribute("clientId");
         User user = userServices.getUserById(clientId);
-
+        String phoneNumber =  user.getPhoneNumber();
+        session.setAttribute("phoneNumber", phoneNumber);
         double total = 0.0;
         for(OrderItems orders: order){
             total += (orders.getPrice() * orders.getQuantity());
@@ -80,5 +81,27 @@ public class OrderController {
         return orderService.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+    @PutMapping("/{id}/{status}")
+    public ResponseEntity<?> setStatus(@PathVariable("id") Long id,@PathVariable("status") String status, HttpSession session) {
+        System.out.println("the id is "+id);
+        System.out.println("status is "+status);
+        if(Objects.equals(id,null) || Objects.equals(status,null)){
+            return ResponseEntity.noContent().build();
+        }
+        boolean done = orderService.setStatusById(id,status);
+        if(done){
+            if(status == "PROCESSING"){
+    //            send message to the client via twilio to send the money via the admin's address
+                String phoneNumber = (String) session.getAttribute("phoneNumber");
+                String message = "Thanks for Placing your order. Please prcodeed by sending the money to this MOMO account (default momo number and name)";
+                smsService.sendSms(phoneNumber, message);
+
+            }
+            return ResponseEntity.ok("Ok");
+        }else {
+            return ResponseEntity.notFound().build();
+        }
+
     }
 }

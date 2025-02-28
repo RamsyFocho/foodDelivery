@@ -30,6 +30,9 @@ public class User {
 //    TODO: Implement phoneNumber
     @NotBlank
     private String password;
+    @Getter
+    @Setter
+    private String phoneNumber;
     @NotBlank
     private String role; // admin/user
     @OneToMany(mappedBy = "user",
@@ -44,28 +47,31 @@ public class User {
     public User() {
     }
 
-    public User(Long id, String name, String email, String password, String role, List<Order> orders, LocalDate createdDate) {
+    public User(Long id, String name, String email, String password, String phoneNumber, String role, List<Order> orders, LocalDate createdDate) {
         this.Id = id;
         this.name = name;
         this.email = email;
         this.password = password;
+        this.phoneNumber = phoneNumber;
         this.role = role;
         this.orders = orders;
         this.createdDate = createdDate;
     }
 
-    public User(String name, String email, String password, String role, List<Order> orders) {
+    public User(String name, String email, String password,String phoneNumber, String role, List<Order> orders) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.phoneNumber = phoneNumber;
         this.role = role;
         this.orders = orders;
     }
 
-    public User(String name, String email, String password,LocalDate createdDate) {
+    public User(String name, String email, String password, String phoneNumber, LocalDate createdDate) {
         this.name = name;
         this.email = email;
         this.password = password;
+        this.phoneNumber = phoneNumber;
         this.createdDate = createdDate;
     }
     public @NotBlank Long getId() {

@@ -9,7 +9,9 @@
     <link rel="stylesheet" th:href="@{/fontAwesome-free-6.6.0-web/css/all.min.css}">
     <script th:src="@{/fontAwesome-free-6.6.0-web/js/all.min.js}"></script>
     <script th:src="@{/js/tailwind.jit.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script th:src="@{/js/chart.js}"></script>
+    <!--    <script th:src = "@{/chart.js-4.4.8/package/dist/chart.js}"></script>-->
+    <!--    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
 
     <style>
         .dashboard-card {
@@ -252,6 +254,8 @@
                             </th>
                             <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date
                             </th>
+                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Options
+                            </th>
                         </tr>
                     </thead>
                     <tbody id="recentOrdersTable" class="bg-white divide-y divide-gray-200">
@@ -349,7 +353,10 @@
 
             fetchDashboardData();
             initializeCharts();
-            fetchRecentOrders();
+            setInterval(() => {
+                console.log("-------fetching recent orders-----------");
+                fetchRecentOrders();
+            }, 15000);
             fetchNotifications();
         });
 
@@ -470,6 +477,8 @@
             try {
                 const response = await fetch('/api/dashboard/stats');
                 const data = await response.json();
+                console.log("dashboard stats --------");
+                console.log(data);
                 updateDashboardStats(data);
             } catch (error) {
                 console.error('Error fetching dashboard data:', error);
@@ -530,9 +539,9 @@
                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     ${order.user.name}
                 </td>
-                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                <td class="flex flex-col px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     ${order.foodOrder.map(foodOrder => `
-                        <span class="py-2 inline-flex text-xs leading-5 font-semibold rounded-full text-grey-800">
+                        <span class="py-2 text-xs leading-5 font-semibold rounded-full text-grey-800">
                             ${foodOrder.quantity} x ${foodOrder.food.name}
                         </span>
                     
@@ -549,10 +558,47 @@
                 <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     ${new Date(order.orderDate).toLocaleDateString()}
                 </td>
+                <td class="flex flex-col px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">   
+                        ${order.status == "ACTIVE" ? `
+                            <button onclick="setStatus(${order.id},'PROCESSING')" class="bg-blue-100 text-blue-800 px-2 py-2 my-2 text-xs leading-5 font-semibold rounded">
+                                Accept
+                            </button>                        
+                        `: ``}
+                        ${order.status == "PROCESSING" ? `
+                            <button class="bg-green-100 text-green-800 px-2 py-2 my-2 text-xs leading-5 font-semibold rounded">
+                                Completed
+                            </button>                        
+                        `: ``}
+                        ${order.status != "CANCELLED" ? `                
+                            <button class=" bg-red-100 text-red-800 px-2 py-2 my-2 text-xs leading-5 font-semibold rounded">
+                                Reject
+                            </button>
+                        `: ``}
+                    
+                </td>
             </tr>
         `).join('');
         }
-
+        async function setStatus(id, status) {
+            alert("clicked");
+            try {
+                const response = await fetch(`/api/orders/${id}/${status}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (response.ok) {
+                    // const res = await response.json();
+                    fetchRecentOrders();
+                    console.log("Ride requested successfully");
+                } else {
+                    console.error("Error in response:", response);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
         // Get status color class
         function getStatusColor(status) {
             const colors = {

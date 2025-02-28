@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -33,5 +34,22 @@ public class OrderService {
 
     public Optional<Order> findById(Long id) {
         return orderRepository.findById(id);
+    }
+
+    public boolean setStatusById(Long id, String status) {
+        try{
+            Optional<Order> order = orderRepository.findById(id);;
+            if(order.isPresent()) {
+                Order orderByStatus = order.get();
+                orderByStatus.setStatus(status);
+                orderRepository.save(orderByStatus);
+                return true;
+            }
+        }catch(Exception ex){
+            System.out.println("error setting Status -----");
+            System.out.println(ex);
+            return false;
+        }
+        return false;
     }
 }
