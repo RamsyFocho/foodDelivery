@@ -249,12 +249,14 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
-                            <tr th:each="order : ${orders}">
+                            <tr th:each="order : ${orders}"
+                              th:classappend="${order.status.toLowerCase() == 'cancelled' || order.status.toLowerCase() == 'completed' ? 'opacity-50 pointer-events-none' : ''}">
                                 <td class="px-6 py-4 whitespace-nowrap" th:text="${order.id}">#12345</td>
                                 <td class="px-6 py-4 whitespace-nowrap" th:text="${order.orderDate}">2025-01-20</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800"
+                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full "
+                                        th:data-status="${order.status}"
                                         th:text="${order.status}">
                                         Delivered
                                     </span>
@@ -273,7 +275,7 @@
                                 <td class="px-6 py-4 whitespace-nowrap" th:text="${order.total + ' FCFA'}">$245.00</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <button class="text-red-600 hover:text-red-900"
-                                        th:onclick="|cancel('${order.id}')|">
+                                        th:onclick="'cancel(' + ${order.id} + ')'">
                                         <i class="fas fa-times"></i> Cancel
                                     </button>
                                 </td>
@@ -319,6 +321,27 @@
     </div>
 
     <script>
+        // ----------status color---------------
+
+        function getStatusColor(status) {
+            const colors = {
+                'pending': 'bg-yellow-100 text-yellow-800',
+                'processing': 'bg-blue-100 text-blue-800',
+                'completed': 'bg-green-100 text-green-800',
+                'cancelled': 'bg-red-100 text-red-800'
+            };
+            return colors[status.toLowerCase()] || 'bg-gray-100 text-gray-800';
+        }
+        // Apply the color dynamically
+        document.addEventListener('DOMContentLoaded', () => {
+            const statusElements = document.querySelectorAll('span[data-status]');
+            statusElements.forEach(element => {
+                const status = element.getAttribute('data-status');
+                // console.log(status);                
+                const colorClass = getStatusColor(status);
+                element.classList.add(...colorClass.split(' '));
+            });
+        });
         // ---------------cancel order-------------------
         async function cancel(id) {
             alert(id);

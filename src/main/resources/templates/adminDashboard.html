@@ -155,7 +155,7 @@
 
         <!-- Statistics Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8">
-            <div class="stat-card">
+            <div class="stat-card shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500">Total Orders</p>
@@ -187,7 +187,7 @@
                 </p>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500">Active Users</p>
@@ -203,7 +203,7 @@
                 </p>
             </div>
 
-            <div class="stat-card">
+            <div class="stat-card shadow-sm">
                 <div class="flex items-center justify-between">
                     <div>
                         <p class="text-gray-500">Low Stock Items</p>
@@ -457,6 +457,10 @@
             try {
                 const response = await fetch("/api/dashboard/sales");
                 const data = await response.json();
+                console.log(data);
+                if(data== null){
+                    alert("Sales are null");
+                }
                 return data.sales || [];
             } catch (error) {
                 console.error("Failed to fetch sales data:", error);
