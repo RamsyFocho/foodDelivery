@@ -6,6 +6,7 @@ import com.newSpringBootProject.FoodShare.domains.Order;
 import com.newSpringBootProject.FoodShare.domains.User;
 import com.newSpringBootProject.FoodShare.services.*;
 import com.newSpringBootProject.FoodShare.webdomains.OrderItems;
+import com.newSpringBootProject.FoodShare.webdomains.OrderRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -31,13 +32,18 @@ public class OrderController {
     private SmsService smsService;
 
     @PostMapping
-    public ResponseEntity<?> createOrder(@RequestBody List<OrderItems> order, HttpSession session) {
+    public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest, HttpSession session) {
         Long clientId = (Long)session.getAttribute("clientId");
         User user = userServices.getUserById(clientId);
         String phoneNumber =  user.getPhoneNumber();
         session.setAttribute("phoneNumber", phoneNumber);
+
+        // Extract data from the request
+        List<OrderItems> orderItems = orderRequest.getItems();
+        String location = orderRequest.getLocation();
+
         double total = 0.0;
-        for(OrderItems orders: order){
+        for(OrderItems orders: orderItems){
             total += (orders.getPrice() * orders.getQuantity());
         }
 
@@ -46,10 +52,11 @@ public class OrderController {
         newOrder.setOrderDate(LocalDate.from(LocalDateTime.now()));
         newOrder.setStatus("ACTIVE");
         newOrder.setTotal(total);
+        newOrder.setLocation(location);
         orderService.addOrder(newOrder);
 
 //        add now the Food items
-        for(OrderItems orders: order){
+        for(OrderItems orders: orderItems){
             FoodOrder foodOrder = new FoodOrder();
             Food food = foodServices.getFoodByName(orders.getName());
 //            substract it from the quantity
@@ -62,7 +69,6 @@ public class OrderController {
 
             foodOrderService.addFoodOrder(foodOrder);
         }
-
 
 //        return ResponseEntity.ok(orderService.addOrder(order));
         return ResponseEntity.ok("test");
@@ -83,22 +89,24 @@ public class OrderController {
                 .orElse(ResponseEntity.notFound().build());
     }
     @PutMapping("/{id}/{status}")
-    public ResponseEntity<?> setStatus(@PathVariable("id") Long id,@PathVariable("status") String status, HttpSession session) {
-        System.out.println("the id is "+id);
+    public ResponseEntity<?> setStatus(@PathVariable("id") Long id,@PathVariable("status") String status) {
+        System.out.println("------------------the id is "+id);
         System.out.println("status is "+status);
         if(Objects.equals(id,null) || Objects.equals(status,null)){
             return ResponseEntity.noContent().build();
         }
         boolean done = orderService.setStatusById(id,status);
         if(done){
-            if(status == "PROCESSING"){
+            User user = orderService.getOrderById(id).getUser();
+            if(status.equals("PROCESSING")){
     //            send message to the client via twilio to send the money via the admin's address
-                String phoneNumber = (String) session.getAttribute("phoneNumber");
-                String message = "Thanks for Placing your order. Please prcodeed by sending the money to this MOMO account (default momo number and name)";
+                String phoneNumber = user.getPhoneNumber();
+                System.out.println(phoneNumber);
+                String message = "Thanks for Placing your order using the RamsyDeliverySystem. Your order would be here soon. Please prcodeed by sending the money to this MOMO account (default momo number and name)";
                 smsService.sendSms(phoneNumber, message);
-
             }
-            return ResponseEntity.ok("Ok");
+            return ResponseEntity.ok("ok");
+
         }else {
             return ResponseEntity.notFound().build();
         }

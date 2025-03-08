@@ -26,6 +26,11 @@
             <div class="p-4 border-b">
                 <h2 class="text-xl font-bold">Food Distribution</h2>
                 <p class="text-sm text-gray-600" th:text="${user.name}">Welcome, User</p>
+                <p class="text-sm text-gray-600" th:text="${user.phoneNumber}">+23757689034</p>
+                <p id="userId" th:text="${user.id}" class="hidden"> </p>
+                <button class="bg-blue-500 text-white px-4 py-1 rounded hover:bg-blue-600" onclick="editInfo()">Edit
+                    info</button>
+
             </div>
 
             <nav class="flex-1 p-4">
@@ -62,7 +67,7 @@
             </nav>
 
             <div class="p-4 border-t">
-                <a href="/logout" class="flex items-center p-2 text-red-600 rounded hover:bg-red-50">
+                <a th:href="@{/logout}" class="flex items-center p-2 text-red-600 rounded hover:bg-red-50">
                     <i class="fas fa-sign-out-alt w-6"></i>
                     <span>Logout</span>
                 </a>
@@ -86,7 +91,7 @@
                     <i class="fas fa-bell text-gray-600"></i>
                     <span
                         class="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                        3
+                        0
                     </span>
                 </button>
             </div>
@@ -227,6 +232,10 @@
                                 </th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Location
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Order Items
                                 </th>
                                 <th
@@ -250,18 +259,22 @@
                                         Delivered
                                     </span>
                                 </td>
-                                <!-- order items -->
-                                <td class="px-6 py-4 whitespace-nowrap flex flex-row" th:each="foodOrder : ${order.foodOrder}">
-                                    <span
-                                        class="py-2 inline-flex text-xs leading-5 font-semibold rounded-full text-grey-800"
-                                        th:text="${foodOrder.quantity} +'x'+ ${foodOrder.food.name}">
-                                        
-                                    </span>
+                                <td class="px-6 py-4 whitespace-nowrap" th:text="${order.location}">Downtown</td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-col">
+                                        <span th:each="foodOrder : ${order.foodOrder}"
+                                            class="py-1 text-xs leading-5 font-semibold text-gray-800"
+                                            th:text="${foodOrder.quantity} + 'x ' + ${foodOrder.food.name}">
+                                            3x Rice
+                                        </span>
+                                    </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap" th:text="${order.total}">$245.00</td>
+                                <!-- TODO Cancel button to js -->
+                                <td class="px-6 py-4 whitespace-nowrap" th:text="${order.total + ' FCFA'}">$245.00</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <button class="text-blue-600 hover:text-blue-900">
-                                        <i class="fas fa-eye"></i> View
+                                    <button class="text-red-600 hover:text-red-900"
+                                        th:onclick="|cancel('${order.id}')|">
+                                        <i class="fas fa-times"></i> Cancel
                                     </button>
                                 </td>
                             </tr>
@@ -280,17 +293,25 @@
                         <h3 class="font-semibold mb-2">Order History Report</h3>
                         <p class="text-sm text-gray-600 mb-4">Download a detailed report of all your orders</p>
                         <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                            onclick="generateReport('order-history')">
+                            onclick="alert('To be implemented...')">
                             <i class="fas fa-download mr-2"></i> Generate PDF
                         </button>
+                        <!-- <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            onclick="generateReport('order-history')">
+                            <i class="fas fa-download mr-2"></i> Generate PDF
+                        </button> -->
                     </div>
                     <div class="border rounded-lg p-4">
                         <h3 class="font-semibold mb-2">Monthly Summary</h3>
                         <p class="text-sm text-gray-600 mb-4">Get a summary of your monthly ordering patterns</p>
                         <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-                            onclick="generateReport('monthly-summary')">
+                            onclick="alert('To be implemented...')">
                             <i class="fas fa-download mr-2"></i> Generate PDF
                         </button>
+                        <!-- <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+                            onclick="generateReport('monthly-summary')">
+                            <i class="fas fa-download mr-2"></i> Generate PDF
+                        </button> -->
                     </div>
                 </div>
             </div>
@@ -298,6 +319,63 @@
     </div>
 
     <script>
+        // ---------------cancel order-------------------
+        async function cancel(id) {
+            alert(id);
+            const status = "CANCELLED";
+            try {
+                const response = await fetch(`/api/orders/${id}/${status}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                });
+                if (response.ok) {
+                    // const res = await response.json();
+                    // fetchRecentOrders();
+                    window.location.reload();
+                    console.log("Ride requested successfully");
+                } else {
+                    console.error("Error in response:", response);
+                }
+            } catch (e) {
+                console.error(e);
+            }
+        }
+        //---------edit user's name---------------
+        async function editInfo() {
+            const userId = document.getElementById("userId").innerHTML;
+            console.log(userId);
+            if (userId != null) {
+                try {
+                    const name = prompt("Enter the new User Name");
+                    const phoneNumber = prompt("Enter the new phoneNumber");
+                    const data = { name, phoneNumber };
+                    const response = await fetch("/auth/edit/" + userId, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data),
+                    });
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.status == "success") {
+                            window.location.reload();
+                            return;
+                        } else {
+                            alert(result.message)
+                        }
+                    }
+                } catch (error) {
+                    console.error(error)
+                }
+
+            }
+
+
+        }
+
         // Tab switching functionality
         function switchTab(tabId) {
             // Hide all tab contents
@@ -320,11 +398,11 @@
 
         function addToCart(button) {
             // check if the quantity is less than 0
-            if(document.getElementBYId("itemQuantity").value <=0){
+            if (document.getElementById("itemQuantity").value <= 0) {
                 alert("Stock of this item is finished");
                 return;
             }
-            
+
             const itemContainer = button.closest('.border');
             const itemName = itemContainer.querySelector('h3').textContent;
             const price = itemContainer.querySelector("#price").textContent.trim();
@@ -444,29 +522,44 @@
                 window.location.reload();
                 return;
             }
+            // Prompt for location first
+            const location = prompt("Enter the delivery location:");
+            // If user cancels prompt or doesn't enter a location
+            if (!location || location.trim() === '') {
+                showNotification('Location is required to place an order', 'error');
+                return;
+            }
 
             try {
+                // ---------trying to include the user's location-----
+                // Create a complete order object including items and location
+                const orderData = {
+                    items: cart,
+                    location: location
+                };
                 // Simulate API call to the backend
                 const response = await fetch('/api/orders', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify(cart), // Send cart as an array directly
+                    body: JSON.stringify(orderData), // Send cart as an array directly
                 });
-                console.log({ items: cart });
-                console.log(JSON.stringify(cart));
+                console.log({ items: orderData });
+                console.log(JSON.stringify(orderData));
 
                 if (response.ok) {
-                    //const data = await response.json(); // Get response data from backend
-                    showNotification('Order placed successfully!', 'success');
-                    window.location.reload();
-                    // console.log('Order response:', data);
+                    //const data = await response.json(); // Get response data from backend                    
 
+                    showNotification('Order placed successfully!', 'success');
+                    alert("Your order has been placed. We'll contact u in a short while");
                     // Clear cart and update UI
                     cart = [];
                     updateCartUI();
                     toggleCart();
+                    window.location.reload();
+                    // console.log('Order response:', data);
+
                 } else {
                     //const errorData = await response.json();
                     showNotification('error');

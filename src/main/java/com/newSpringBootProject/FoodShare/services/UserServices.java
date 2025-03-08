@@ -21,7 +21,7 @@ public class UserServices {
     public boolean RegisterUser(User registerUser) {
         List <User> users = getAllUsers();
         for(User user: users){
-            if(Objects.equals(registerUser.getEmail(), user.getEmail()) || Objects.equals(registerUser.getName(),user.getName()) ){
+            if(Objects.equals(registerUser.getEmail(), user.getEmail()) || Objects.equals(registerUser.getPhoneNumber(),user.getPhoneNumber()) ){
                 return false;
             }
         }
@@ -38,5 +38,22 @@ public class UserServices {
     public User getUserById(Long clientId) {
        Optional<User> user =  userRepository.findById(clientId);
         return user.orElse(null);
+    }
+
+    public void deleteUser(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    public boolean editUser(Long Id, String name, String phoneNumber) {
+        try{
+            User user = getUserById(Id);
+            user.setPhoneNumber(phoneNumber);
+            user.setName(name);
+            userRepository.save(user);
+            return true;
+        }catch(Exception ex){
+            System.out.println(ex);
+            return false;
+        }
     }
 }

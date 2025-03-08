@@ -10,7 +10,7 @@
     <script th:src="@{/fontAwesome-free-6.6.0-web/js/all.min.js}"></script>
     <script th:src="@{/js/tailwind.jit.js}"></script>
     <script th:src="@{/js/chart.js}"></script>
-    <!--    <script th:src = "@{/chart.js-4.4.8/package/dist/chart.js}"></script>-->
+    <!-- <script th:src = "@{/chart.js-4.4.8/package/dist/chart.js}"></script> -->
     <!--    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
 
     <style>
@@ -114,16 +114,19 @@
             <a th:href="@{/inventory}" class="flex items-center px-6 py-3 hover:bg-gray-800">
                 <i class="fas fa-box mr-3"></i>Inventory
             </a>
-            <a href="#orders" class="flex items-center px-6 py-3 hover:bg-gray-800">
+            <a href="#orders" onclick="alert('To be implemented')"
+                class="flex items-center px-6 py-3 hover:bg-gray-800">
                 <i class="fas fa-shopping-cart mr-3"></i>Orders
             </a>
-            <a href="#users" class="flex items-center px-6 py-3 hover:bg-gray-800">
+            <a th:href="@{/users}" class="flex items-center px-6 py-3 hover:bg-gray-800">
                 <i class="fas fa-users mr-3"></i>Users
             </a>
-            <a href="#reports" class="flex items-center px-6 py-3 hover:bg-gray-800">
+            <a href="#reports" onclick="alert('To be implemented')"
+                class="flex items-center px-6 py-3 hover:bg-gray-800">
                 <i class="fas fa-file-alt mr-3"></i>Reports
             </a>
-            <a href="#messages" class="flex items-center px-6 py-3 hover:bg-gray-800">
+            <a href="#messages" onclick="alert('To be implemented')"
+                class="flex items-center px-6 py-3 hover:bg-gray-800">
                 <i class="fas fa-envelope mr-3"></i>Messages
             </a>
         </nav>
@@ -246,6 +249,8 @@
                             </th>
                             <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer
                             </th>
+                            <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Location
+                            </th>
                             <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Items
                             </th>
                             <th class="px-4 md:px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total
@@ -352,7 +357,10 @@
             });
 
             fetchDashboardData();
-            initializeCharts();
+            const salesData = fetchSalesData();
+            const categoryData = fetchCategoryData();
+            initializeCharts(salesData, categoryData);
+            // initializeCharts();
             setInterval(() => {
                 console.log("-------fetching recent orders-----------");
                 fetchRecentOrders();
@@ -361,8 +369,7 @@
         });
 
         // Responsive charts setup
-        function initializeCharts() {
-            // Chart.js global defaults for responsiveness
+        function initializeCharts(salesData, categoryData) {
             Chart.defaults.responsive = true;
             Chart.defaults.maintainAspectRatio = false;
 
@@ -371,10 +378,10 @@
             new Chart(salesCtx, {
                 type: 'line',
                 data: {
-                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    labels: salesData.labels || ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
                     datasets: [{
                         label: 'Sales',
-                        data: [12, 19, 3, 5, 2, 3],
+                        data: salesData.values || [12, 19, 3, 5, 2, 3],
                         borderColor: 'rgb(59, 130, 246)',
                         backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         tension: 0.1,
@@ -402,17 +409,11 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: {
-                                drawBorder: false
-                            },
-                            ticks: {
-                                precision: 0
-                            }
+                            grid: { drawBorder: false },
+                            ticks: { precision: 0 }
                         },
                         x: {
-                            grid: {
-                                display: false
-                            }
+                            grid: { display: false }
                         }
                     },
                     interaction: {
@@ -427,16 +428,10 @@
             new Chart(categoryCtx, {
                 type: 'doughnut',
                 data: {
-                    labels: ['Grains', 'Vegetables', 'Fruits', 'Protein', 'Dairy'],
+                    labels: categoryData.labels || ['Grains', 'Vegetables', 'Fruits', 'Protein', 'Dairy'],
                     datasets: [{
-                        data: [12, 19, 3, 5, 2],
-                        backgroundColor: [
-                            '#FCD34D',
-                            '#34D399',
-                            '#F87171',
-                            '#60A5FA',
-                            '#A78BFA'
-                        ]
+                        data: categoryData.values || [12, 19, 3, 5, 2],
+                        backgroundColor: ['#FCD34D', '#34D399', '#F87171', '#60A5FA', '#A78BFA']
                     }]
                 },
                 options: {
@@ -454,22 +449,30 @@
                         }
                     },
                     cutout: '65%',
-                    layout: {
-                        padding: 10
-                    }
+                    layout: { padding: 10 }
                 }
             });
+        }
+        async function fetchSalesData() {
+            try {
+                const response = await fetch("/api/dashboard/sales");
+                const data = await response.json();
+                return data.sales || [];
+            } catch (error) {
+                console.error("Failed to fetch sales data:", error);
+                return [];
+            }
+        }
 
-            // Handle chart resize on window resize
-            window.addEventListener('resize', function () {
-                setTimeout(function () {
-                    document.querySelectorAll('canvas').forEach(canvas => {
-                        if (canvas.chart) {
-                            canvas.chart.resize();
-                        }
-                    });
-                }, 300);
-            });
+        async function fetchCategoryData() {
+            try {
+                const response = await fetch("/api/dashboard/categories");
+                const data = await response.json();
+                return data.categories || [];
+            } catch (error) {
+                console.error("Failed to fetch category data:", error);
+                return [];
+            }
         }
 
         // Fetch dashboard data
@@ -530,55 +533,66 @@
         // Render recent orders
         function renderRecentOrders(orders) {
             console.log(orders);
+
+            const twelveHoursAgo = new Date();
+            twelveHoursAgo.setHours(twelveHoursAgo.getHours() - 12);
+
+            // Filter orders within the last 12 hours
+            const recentOrders = orders.filter(order => new Date(order.orderDate) >= twelveHoursAgo);
+
+            recentOrders.reverse(); // Reverse the filtered orders
+
             const tbody = document.getElementById('recentOrdersTable');
-            tbody.innerHTML = orders.map(order => `
-            <tr class="hover:bg-gray-50">
-                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                    #${order.id}
-                </td>
-                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${order.user.name}
-                </td>
-                <td class="flex flex-col px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${order.foodOrder.map(foodOrder => `
-                        <span class="py-2 text-xs leading-5 font-semibold rounded-full text-grey-800">
-                            ${foodOrder.quantity} x ${foodOrder.food.name}
+            tbody.innerHTML = recentOrders.map(order => `
+                <tr class="hover:bg-gray-50">
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                        #${order.id}
+                    </td>
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${order.user.name}
+                    </td>
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${order.location}
+                    </td>
+                    <td class="flex flex-col px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${order.foodOrder.map(foodOrder => `
+                            <span class="py-2 text-xs leading-5 font-semibold rounded-full text-grey-800">
+                                ${foodOrder.quantity} x ${foodOrder.food.name}
+                            </span>
+                        `).join('')}
+                    </td>
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${order.total.toLocaleString()} FCFA
+                    </td>
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}">
+                            ${order.status}
                         </span>
-                    
-                    `)}
-                </td>
-                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${order.total.toLocaleString()} FCFA
-                </td>
-                <td class="px-4 md:px-6 py-4 whitespace-nowrap">
-                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(order.status)}">
-                        ${order.status}
-                    </span>
-                </td>
-                <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    ${new Date(order.orderDate).toLocaleDateString()}
-                </td>
-                <td class="flex flex-col px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">   
+                    </td>
+                    <td class="px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        ${new Date(order.orderDate).toLocaleDateString()}
+                    </td>
+                    <td class="flex flex-col px-4 md:px-6 py-4 whitespace-nowrap text-sm text-gray-500">   
                         ${order.status == "ACTIVE" ? `
                             <button onclick="setStatus(${order.id},'PROCESSING')" class="bg-blue-100 text-blue-800 px-2 py-2 my-2 text-xs leading-5 font-semibold rounded">
                                 Accept
                             </button>                        
                         `: ``}
                         ${order.status == "PROCESSING" ? `
-                            <button class="bg-green-100 text-green-800 px-2 py-2 my-2 text-xs leading-5 font-semibold rounded">
+                            <button onclick="setStatus(${order.id},'COMPLETED')" class="bg-green-100 text-green-800 px-2 py-2 my-2 text-xs leading-5 font-semibold rounded">
                                 Completed
                             </button>                        
                         `: ``}
                         ${order.status != "CANCELLED" ? `                
-                            <button class=" bg-red-100 text-red-800 px-2 py-2 my-2 text-xs leading-5 font-semibold rounded">
+                            <button onclick="setStatus(${order.id},'CANCELLED')" class=" bg-red-100 text-red-800 px-2 py-2 my-2 text-xs leading-5 font-semibold rounded">
                                 Reject
                             </button>
                         `: ``}
-                    
-                </td>
-            </tr>
-        `).join('');
+                    </td>
+                </tr>
+            `).join('');
         }
+
         async function setStatus(id, status) {
             alert("clicked");
             try {

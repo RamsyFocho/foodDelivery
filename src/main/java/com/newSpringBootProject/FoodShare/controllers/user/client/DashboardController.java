@@ -11,6 +11,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 @Controller
@@ -35,8 +37,9 @@ public class DashboardController {
         model.addAttribute("activeOrders", orderService.findActiveOrders(user).size());
         model.addAttribute("completedOrders", orderService.findCompletedOrders(user).size());
         model.addAttribute("availableItems", foodService.getAllFoodItemsWithQuantity());
-        model.addAttribute("orders", orderService.findByUser(user));
-        List<Order> order = orderService.findByUser(user);
+        List <Order> orders = orderService.findByUser(user);
+        Collections.reverse(orders);// reverse the object before sending it
+        model.addAttribute("orders",orders );
 
         return "clientDashboard.html";
     }

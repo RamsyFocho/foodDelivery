@@ -27,7 +27,7 @@ public class Order {
 //    @JsonBackReference("user_id")  // Prevent serialization of the user in this object
 //    @JsonBackReference
     private User user;
-
+    private String location;
     private LocalDate orderDate;
     private String status;//pending, processing, completed, cancelled
     private Double total;
@@ -38,25 +38,28 @@ public class Order {
     public Order() {
     }
 
-    public Order(User user, LocalDate orderDate, String status, Double total, List<FoodOrder> foodOrder) {
+    public Order(User user,String location, LocalDate orderDate, String status, Double total, List<FoodOrder> foodOrder) {
         this.user = user;
+        this.location = location;
         this.orderDate = orderDate;
         this.status = status;
         this.total = total;
         this.foodOrder = foodOrder;
     }
 
-    public Order(long id, User user, LocalDate orderDate, String status, Double total, List<FoodOrder> foodOrder) {
+    public Order(long id, User user,String location, LocalDate orderDate, String status, Double total, List<FoodOrder> foodOrder) {
         this.id = id;
         this.user = user;
+        this.location = location;
         this.orderDate = orderDate;
         this.status = status;
         this.total = total;
         this.foodOrder = foodOrder;
     }
 
-    public Order(User user, LocalDate orderDate, String status, Double total) {
+    public Order(User user, String location, LocalDate orderDate, String status, Double total) {
         this.user = user;
+        this.location = location;
         this.orderDate = orderDate;
         this.status = status;
         this.total = total;

@@ -52,4 +52,9 @@ public class OrderService {
         }
         return false;
     }
+
+    public Order getOrderById(Long id) {
+        Optional <Order> order =  orderRepository.findById(id);
+        return order.orElse(null);
+    }
 }
