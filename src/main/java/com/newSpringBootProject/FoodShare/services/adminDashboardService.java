@@ -76,8 +76,6 @@ public class adminDashboardService {
     public Map<String, Object> getSalesData(Integer year, Integer month) {
         int targetYear = year != null ? year : LocalDate.now().getYear();
         Map<String, Object> result = new HashMap<>();
-        List<String> labels = new ArrayList<>();
-        List<Double> data = new ArrayList<>();
 
         // Get start and end dates
         LocalDate startDate = LocalDate.of(targetYear, 1, 1);
@@ -95,16 +93,20 @@ public class adminDashboardService {
         Arrays.asList(months).forEach(m -> monthlySales.put(m, 0.0));
 
         // Calculate sales for each month
-        orders.forEach(order -> {
-            String monthName = order.getOrderDate().getMonth().toString().substring(0, 3);
+        for (Order order : orders) {
+            // Get month index (1-12) and convert to array index (0-11)
+            int monthIndex = order.getOrderDate().getMonthValue() - 1;
+            // Use the month name from our array for consistency
+            String monthName = months[monthIndex];
             monthlySales.merge(monthName, order.getTotal(), Double::sum);
-        });
+        }
 
-        labels.addAll(monthlySales.keySet());
-        data.addAll(monthlySales.values());
+        // Create a map structure that matches the frontend expectations
+        Map<String, Object> salesData = new HashMap<>();
+        salesData.put("labels", new ArrayList<>(monthlySales.keySet()));
+        salesData.put("values", new ArrayList<>(monthlySales.values()));
 
-        result.put("labels", labels);
-        result.put("data", data);
+        result.put("sales", salesData);
         return result;
     }
 
@@ -125,7 +127,7 @@ public class adminDashboardService {
         data.addAll(categoryQuantities.values());
 
         result.put("labels", labels);
-        result.put("data", data);
+        result.put("values", data);
         return result;
     }
 

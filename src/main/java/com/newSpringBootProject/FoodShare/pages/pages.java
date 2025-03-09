@@ -28,10 +28,8 @@ public class pages{
     }
     @GetMapping("/admin/dashboard")
     public String adminDashboardPage(HttpSession session){
-        Long userId = (Long) session.getAttribute("adminId");
-
-        if(userId == 0){
-           return "redirect:/login.html";
+        if(session.getAttribute("adminId") == null){
+           return "redirect:/loginPage";
         }
         return "adminDashboard.html";
     }
