@@ -45,11 +45,11 @@ public class pages{
     public String inventoryPage(){
         return "inventory.html";
     }
-    @GetMapping("/users")
-    public String userMsPage(){
-//        return  "/userManagement.html";
-        return "admin/users.html";
-    }
+//    @GetMapping("/users")
+//    public String userMsPage(){
+////        return  "/userManagement.html";
+//        return "admin/users.html";
+//    }
     @GetMapping("/orders")
     public String orderMsPage(HttpSession session){
         if(session.getAttribute("adminId") == null){

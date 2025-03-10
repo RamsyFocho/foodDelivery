@@ -175,11 +175,11 @@
                 document.querySelector('.sidebar').classList.toggle('active');
             });
         }
-        // let orders;
+        let orders;
         async function fetchOrders() {
             try {
                 const response = await fetch('/api/orders/recent');
-                const orders = await response.json();
+                orders = await response.json();
                 console.log(orders);                
                 filteredOrders = orders;
                 renderOrders();
@@ -190,23 +190,31 @@
         }
 
         function filterOrders() {
+            // alert("yo");
             const searchTerm = document.getElementById('orderSearch').value.toLowerCase();
-            const status = document.getElementById('statusFilter').value;
+            const status = document.getElementById('statusFilter').value.toUpperCase();
             const date = document.getElementById('dateFilter').value;
             const minAmount = document.getElementById('minAmountFilter').value;
             const maxAmount = document.getElementById('maxAmountFilter').value;
-
-            filteredOrders = filteredOrders.filter(order => {
-                const matchesSearch = order.user.name.toLowerCase().includes(searchTerm) ||
+            let duplicateOrders = filteredOrders;
+            filteredOrders = orders.filter(order => {
+                let matchesSearch = order.user.name.toLowerCase().includes(searchTerm) ||
                     order.id.toString().includes(searchTerm);
-                const matchesStatus = !status || order.status === status;
-                const matchesDate = !date || new Date(order.orderDate).toLocaleDateString() === new Date(date).toLocaleDateString();
-                const matchesAmount = (!minAmount || order.total >= minAmount) &&
+                let matchesStatus = !status || order.status === status;
+                let matchesDate = !date || new Date(order.orderDate).toLocaleDateString() === new Date(date).toLocaleDateString();
+                let matchesAmount = (!minAmount || order.total >= minAmount) &&
                     (!maxAmount || order.total <= maxAmount);
-                
-                return matchesSearch && matchesStatus && matchesDate && matchesAmount;
-            });
 
+                    matchesSearch = matchesSearch==null?duplicateOrders:matchesSearch;
+                    matchesStatus = matchesStatus==null?duplicateOrders:matchesStatus;
+                    matchesDate = matchesDate==null?duplicateOrders:matchesDate;
+                    matchesAmount = matchesAmount==null?duplicateOrders:matchesAmount;
+                    console.log(matchesSearch);
+                    
+                return matchesSearch && matchesStatus && matchesDate && matchesAmount ;
+            });
+            console.log(filteredOrders);
+             
             currentPage = 1;
             renderOrders();
         }
