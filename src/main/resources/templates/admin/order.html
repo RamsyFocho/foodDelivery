@@ -1,14 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Orders - Food Distribution Admin</title>
     <link rel="stylesheet" th:href="@{/css/admin/styles.css}">
-    
+    <link rel="stylesheet" th:href="@{/css/output.css}">
+    <script th:src="@{/js/tailwind.jit.js}"></script>
+
     <link rel="stylesheet" th:href="@{/fontAwesome-free-6.6.0-web/css/all.min.css}">
     <script th:src="@{/fontAwesome-free-6.6.0-web/js/all.min.js}"></script>
 </head>
+
 <body class="bg-gray-50">
     <!-- Mobile Menu Button -->
     <button id="mobileMenuBtn" class="mobile-menu-btn fixed top-4 left-4 z-50">
@@ -16,25 +20,34 @@
     </button>
 
     <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-header">
+    <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 bg-gray-900 text-white">
+        <div class="p-6 flex items-center justify-between">
             <h1 class="text-2xl font-bold">Admin Panel</h1>
+            <button id="closeSidebar" class="p-2 text-white md:hidden">
+                <i class="fas fa-times"></i>
+            </button>
         </div>
-        <nav class="sidebar-nav">
-            <a href="index.html" class="nav-item">
-                <i class="fas fa-chart-line"></i>Dashboard
+        <nav class="mt-6">
+            <a th:href="@{/admin/dashboard}" class="flex items-center px-6 py-3 hover:bg-gray-800 active">
+                <i class="fas fa-chart-line mr-3"></i>Dashboard
             </a>
-            <a href="orders.html" class="nav-item active">
-                <i class="fas fa-shopping-cart"></i>Orders
+            <a th:href="@{/inventory}" class="flex items-center px-6 py-3 hover:bg-gray-800">
+                <i class="fas fa-box mr-3"></i>Inventory
             </a>
-            <a href="users.html" class="nav-item">
-                <i class="fas fa-users"></i>Users
+            <a th:href="@{/orders}" 
+                class="flex items-center px-6 py-3 hover:bg-gray-800">
+                <i class="fas fa-shopping-cart mr-3"></i>Orders
             </a>
-            <a href="#" class="nav-item">
-                <i class="fas fa-box"></i>Inventory
+            <a th:href="@{/users}" class="flex items-center px-6 py-3 hover:bg-gray-800">
+                <i class="fas fa-users mr-3"></i>Users
             </a>
-            <a href="#" class="nav-item">
-                <i class="fas fa-file-alt"></i>Reports
+            <a href="#reports" onclick="alert('To be implemented')"
+                class="flex items-center px-6 py-3 hover:bg-gray-800">
+                <i class="fas fa-file-alt mr-3"></i>Reports
+            </a>
+            <a href="#messages" onclick="alert('To be implemented')"
+                class="flex items-center px-6 py-3 hover:bg-gray-800">
+                <i class="fas fa-envelope mr-3"></i>Messages
             </a>
         </nav>
     </div>
@@ -46,7 +59,8 @@
             <h1 class="header-title">Orders Management</h1>
             <div class="header-actions">
                 <div class="form-group">
-                    <input type="text" id="orderSearch" placeholder="Search orders..." class="px-4 py-2 border rounded-lg">
+                    <input type="text" id="orderSearch" placeholder="Search orders..."
+                        class="px-4 py-2 border rounded-lg">
                 </div>
                 <button class="btn btn-primary" onclick="exportOrders()">
                     <i class="fas fa-download"></i>
@@ -110,7 +124,8 @@
             <div class="p-4 border-t border-gray-200">
                 <div class="flex items-center justify-between">
                     <div class="text-sm text-gray-500">
-                        Showing <span id="startRange">1</span> to <span id="endRange">10</span> of <span id="totalOrders">100</span> orders
+                        Showing <span id="startRange">1</span> to <span id="endRange">10</span> of <span
+                            id="totalOrders">100</span> orders
                     </div>
                     <div class="flex gap-2">
                         <button class="btn btn-secondary" onclick="previousPage()">Previous</button>
@@ -126,7 +141,7 @@
         <div class="modal-content">
             <div class="flex justify-between items-center mb-4">
                 <h2 class="text-2xl font-bold">Order Details</h2>
-                <button onclick="closeOrderModal()" class="text-gray-500 hover:text-gray-700">
+                <button type="button" onclick="closeOrderModal()" class="text-gray-500 hover:text-gray-700">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -136,14 +151,14 @@
         </div>
     </div>
 
-    <script src="js/main.js"></script>
+    <!-- <script src="js/main.js"></script> -->
     <script>
         // Orders page specific JavaScript
         let currentPage = 1;
         const itemsPerPage = 10;
         let filteredOrders = [];
 
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             fetchOrders();
             setupEventListeners();
         });
@@ -154,22 +169,23 @@
             document.getElementById('dateFilter').addEventListener('change', filterOrders);
             document.getElementById('minAmountFilter').addEventListener('input', filterOrders);
             document.getElementById('maxAmountFilter').addEventListener('input', filterOrders);
-            
+
             // Mobile menu toggle
-            document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('mobileMenuBtn').addEventListener('click', function () {
                 document.querySelector('.sidebar').classList.toggle('active');
             });
         }
-
+        // let orders;
         async function fetchOrders() {
             try {
-                const response = await fetch('http://localhost:8080/api/orders');
+                const response = await fetch('/api/orders/recent');
                 const orders = await response.json();
+                console.log(orders);                
                 filteredOrders = orders;
                 renderOrders();
             } catch (error) {
                 console.error('Error fetching orders:', error);
-                showError('Failed to load orders');
+                // showError('Failed to load orders');
             }
         }
 
@@ -180,14 +196,14 @@
             const minAmount = document.getElementById('minAmountFilter').value;
             const maxAmount = document.getElementById('maxAmountFilter').value;
 
-            filteredOrders = orders.filter(order => {
-                const matchesSearch = order.customerName.toLowerCase().includes(searchTerm) ||
-                                    order.id.toString().includes(searchTerm);
+            filteredOrders = filteredOrders.filter(order => {
+                const matchesSearch = order.user.name.toLowerCase().includes(searchTerm) ||
+                    order.id.toString().includes(searchTerm);
                 const matchesStatus = !status || order.status === status;
-                const matchesDate = !date || new Date(order.date).toLocaleDateString() === new Date(date).toLocaleDateString();
+                const matchesDate = !date || new Date(order.orderDate).toLocaleDateString() === new Date(date).toLocaleDateString();
                 const matchesAmount = (!minAmount || order.total >= minAmount) &&
-                                    (!maxAmount || order.total <= maxAmount);
-
+                    (!maxAmount || order.total <= maxAmount);
+                
                 return matchesSearch && matchesStatus && matchesDate && matchesAmount;
             });
 
@@ -207,13 +223,19 @@
                         <span class="font-medium">#${order.id}</span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        ${order.customerName}
+                        ${order.user.name}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        ${order.itemCount} items
+                        <div class="flex flex-col">
+                            ${order.foodOrder.map(foodOrder=>
+                                `<div class="py-1 text-xs leading-5 font-semibold text-gray-800">
+                                    ${foodOrder.quantity} x ${foodOrder.food.name}
+                                </div>`
+                            )} 
+                        </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        ${formatCurrency(order.total)}
+                        ${order.total.toLocaleString()}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <span class="status-badge status-${order.status.toLowerCase()}">
@@ -221,7 +243,7 @@
                         </span>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                        ${formatDate(order.date)}
+                        ${new Date(order.orderDate).toLocaleDateString()}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                         <button class="btn btn-secondary" onclick="viewOrderDetails(${order.id})">
@@ -255,6 +277,8 @@
         function viewOrderDetails(orderId) {
             // Implement order details view
             const order = filteredOrders.find(o => o.id === orderId);
+            console.log(order);
+            
             if (order) {
                 document.getElementById('orderDetails').innerHTML = `
                     <div class="space-y-4">
@@ -265,11 +289,13 @@
                             </div>
                             <div>
                                 <h4 class="font-medium text-gray-500">Date</h4>
-                                <p>${formatDate(order.date)}</p>
+                                <p>${order.orderDate}</p>
                             </div>
                             <div>
                                 <h4 class="font-medium text-gray-500">Customer</h4>
-                                <p>${order.customerName}</p>
+                                <p>${order.user.name}</p>
+                                <p>${order.user.phoneNumber}</p>
+                                <p>${order.user.email}</p>
                             </div>
                             <div>
                                 <h4 class="font-medium text-gray-500">Status</h4>
@@ -287,18 +313,18 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    ${order.items.map(item => `
+                                    ${order.foodOrder.map(item => `
                                         <tr>
-                                            <td>${item.name}</td>
+                                            <td>${item.food.name}</td>
                                             <td class="text-right">${item.quantity}</td>
-                                            <td class="text-right">${formatCurrency(item.price)}</td>
+                                            <td class="text-right">${item.price}</td>
                                         </tr>
                                     `).join('')}
                                 </tbody>
                                 <tfoot>
                                     <tr>
                                         <td colspan="2" class="text-right font-medium">Total:</td>
-                                        <td class="text-right font-medium">${formatCurrency(order.total)}</td>
+                                        <td class="text-right font-medium">${order.total}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -316,7 +342,7 @@
         function exportOrders() {
             // Implement export functionality
             const csv = filteredOrders.map(order => {
-                return `${order.id},${order.customerName},${order.itemCount},${order.total},${order.status},${formatDate(order.date)}`;
+                return `${order.id},${order.user.name},${order.location},${order.foodOrder.map(foodOrder=>{foodOrder.food.name})},${order.foodOrder.map(foodOrder=>{foodOrder.quantity})},${order.total},${order.status},${order.date}`;
             }).join('\n');
 
             const blob = new Blob([csv], { type: 'text/csv' });
@@ -330,4 +356,5 @@
         }
     </script>
 </body>
+
 </html>

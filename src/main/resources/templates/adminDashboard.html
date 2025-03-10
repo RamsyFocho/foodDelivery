@@ -9,7 +9,7 @@
     <link rel="stylesheet" th:href="@{/fontAwesome-free-6.6.0-web/css/all.min.css}">
     <script th:src="@{/fontAwesome-free-6.6.0-web/js/all.min.js}"></script>
     <script th:src="@{/js/tailwind.jit.js}"></script>
-    <script th:src="@{/js/chart.js}"></script>
+    <script th:src="@{/js/chart.umd.js}"></script>
     <!-- <script th:src = "@{/chart.js-4.4.8/package/dist/chart.js}"></script> -->
     <!--    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>-->
 
@@ -114,7 +114,7 @@
             <a th:href="@{/inventory}" class="flex items-center px-6 py-3 hover:bg-gray-800">
                 <i class="fas fa-box mr-3"></i>Inventory
             </a>
-            <a href="#orders" onclick="alert('To be implemented')"
+            <a th:href="@{/orders}" 
                 class="flex items-center px-6 py-3 hover:bg-gray-800">
                 <i class="fas fa-shopping-cart mr-3"></i>Orders
             </a>
@@ -130,6 +130,12 @@
                 <i class="fas fa-envelope mr-3"></i>Messages
             </a>
         </nav>
+        <div class="p-4 border-t">
+            <a th:href="@{/logout}" class="flex items-center p-2 text-red-600 rounded hover:bg-red-50">
+                <i class="fas fa-sign-out-alt w-6"></i>
+                <span>Logout</span>
+            </a>
+        </div>
     </div>
 
     <!-- Main Content -->
