@@ -103,9 +103,18 @@
     <div id="sidebar" class="sidebar fixed inset-y-0 left-0 w-64 bg-gray-900 text-white">
         <div class="p-6 flex items-center justify-between">
             <h1 class="text-2xl font-bold">Admin Panel</h1>
+            
+
             <button id="closeSidebar" class="p-2 text-white md:hidden">
                 <i class="fas fa-times"></i>
             </button>
+        </div>
+        <div class="info mt-2">
+            <span class="flex flex-row mb-2">
+                <i class="fas fa-user-tie p-2 rounded-sm"></i>
+                <p id="userInfo"></p>
+            </span>
+            <a class="px-6 py-3 hover:bg-gray-800 w-full" onclick="editInfo()">Edit info</a>
         </div>
         <nav class="mt-6">
             <a th:href="@{/admin/dashboard}" class="flex items-center px-6 py-3 hover:bg-gray-800 active">
@@ -114,8 +123,7 @@
             <a th:href="@{/inventory}" class="flex items-center px-6 py-3 hover:bg-gray-800">
                 <i class="fas fa-box mr-3"></i>Inventory
             </a>
-            <a th:href="@{/orders}" 
-                class="flex items-center px-6 py-3 hover:bg-gray-800">
+            <a th:href="@{/orders}" class="flex items-center px-6 py-3 hover:bg-gray-800">
                 <i class="fas fa-shopping-cart mr-3"></i>Orders
             </a>
             <a th:href="@{/users}" class="flex items-center px-6 py-3 hover:bg-gray-800">
@@ -339,7 +347,13 @@
             const sidebarToggle = document.getElementById('sidebarToggle');
             const closeSidebar = document.getElementById('closeSidebar');
             const sidebarOverlay = document.getElementById('sidebarOverlay');
+            let userData = await fetchUserInfo();
+            if (userData != null || userData.length > 0) {
+                displayUserData(userData);
+            } else {
+                console.log("-------User data empty----------");
 
+            }
             function openSidebar() {
                 sidebar.classList.add('active');
                 sidebarOverlay.classList.remove('hidden');
@@ -377,6 +391,53 @@
             }, 15000);
             // fetchNotifications();
         });
+        function displayUserData(userData) {
+            document.getElementById("userInfo").innerHTML = `${userData.email}`;
+        }
+        async function fetchUserInfo() {
+            const response = await fetch("/auth/userInfo");
+            if (response.ok) {
+                const result = await response.json();
+                if (result.status == "success") {
+                    console.log(result.data);
+                    return result.data;
+                } else {
+                    return result.message;
+                }
+
+            }
+
+        }
+        //---------edit user's name---------------
+        async function editInfo() {
+            const userId = document.getElementById("userId").innerHTML;
+            console.log(userId);
+            if (userId != null) {
+                try {
+                    const name = prompt("Enter the new User Name");
+                    const phoneNumber = prompt("Enter the new phoneNumber");
+                    const data = { name, phoneNumber };
+                    const response = await fetch("/auth/edit/" + userId, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify(data),
+                    });
+                    if (response.ok) {
+                        const result = await response.json();
+                        if (result.status == "success") {
+                            window.location.reload();
+                            return;
+                        } else {
+                            alert(result.message)
+                        }
+                    }
+                } catch (error) {
+                    console.error(error)
+                }
+            }
+        }
         // Responsive charts setup
         function initializeCharts(salesData, categoryData) {
             console.log("Labels:", salesData.labels);

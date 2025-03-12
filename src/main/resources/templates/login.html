@@ -27,6 +27,9 @@
         .fade-in {
             animation: fadeIn 0.5s ease-in;
         }
+        .left-img{
+            height: 140vh;
+        }
         
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(20px); }
@@ -50,7 +53,7 @@
             <div class="absolute inset-0 bg-gradient-to-r from-blue-600/30 to-purple-600/30"></div>
             <img 
                 th:src="@{/images/foods.jpg}"
-                class="w-full h-full object-cover fade-in"
+                class="left-img w-full fade-in"
                 alt="Food Distribution"
             />
         </div>

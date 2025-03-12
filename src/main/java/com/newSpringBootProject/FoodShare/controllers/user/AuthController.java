@@ -44,11 +44,22 @@ public class AuthController {
             return ResponseEntity.ok(Map.of("status","success","userId",user.getId(),"role",user.getRole() ));
 
         }else{
-//            TODO : incorrect password
             return ResponseEntity.ok(Map.of("status","failed","message","password" ));
 
         }
+    }
+    @GetMapping("/userInfo")
+    public ResponseEntity<?> userInfo(HttpSession session){
+        Long id = (Long) session.getAttribute("adminId");
+        User user = userServices.getUserById(id);
+        if (user != null){
+            System.out.println(user.getEmail());
+            return ResponseEntity.ok(Map.of("status","success","data",user));
 
+        }else{
+            return ResponseEntity.ok(Map.of("status","failed","message","User not found"));
+
+        }
     }
     @PostMapping("/edit/{id}")
     public ResponseEntity<?> editUser(@PathVariable Long id, @RequestBody RegisterUser editUser) {

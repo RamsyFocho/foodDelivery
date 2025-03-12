@@ -2,6 +2,7 @@ package com.newSpringBootProject.FoodShare.controllers.user.admin;
 
 import com.newSpringBootProject.FoodShare.domains.User;
 import com.newSpringBootProject.FoodShare.services.UserServices;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,7 +15,10 @@ public class manageUserController {
     private UserServices userService;
 
     @GetMapping
-    public String listUsers(Model model) {
+    public String listUsers(Model model, HttpSession session) {
+        if(session.getAttribute("adminId") == null){
+            return "redirect:/loginPage";
+        }
         model.addAttribute("users", userService.getAllUsers());
            return  "/userManagement.html";
     }
