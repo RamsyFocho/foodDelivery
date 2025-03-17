@@ -33,6 +33,8 @@ public class pages{
         }
         return "adminDashboard.html";
     }
+
+
     @GetMapping("/logout")
     public String logOut(HttpSession session){
         session.removeAttribute("clientId");
@@ -41,15 +43,23 @@ public class pages{
         session.invalidate();
         return "redirect:/loginPage";
     }
+    @GetMapping("/services")
+    public String ServicesPage(){
+        return "service.html";
+    }
+    @GetMapping("/about")
+    public String AboutPage(){
+        return "about.html";
+    }
     @GetMapping("/inventory")
-    public String inventoryPage(){
+    public String inventoryPage(HttpSession session){
+        Long userId = (Long) session.getAttribute("clientId");
+        if(session.getAttribute("role")=="" || userId == null){
+            return "/login.html";
+        }
         return "inventory.html";
     }
-//    @GetMapping("/users")
-//    public String userMsPage(){
-////        return  "/userManagement.html";
-//        return "admin/users.html";
-//    }
+
     @GetMapping("/orders")
     public String orderMsPage(HttpSession session){
         if(session.getAttribute("adminId") == null){
