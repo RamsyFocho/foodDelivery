@@ -142,7 +142,7 @@
 
     <!-- Add/Edit Modal -->
     <div id="foodModal" class="modal">
-        <div class="bg-white rounded-lg p-6 w-full max-w-md slide-in mt-64">
+        <div class="bg-white rounded-lg p-6 w-full max-w-md slide-in mt-32">
             <h2 id="modalTitle" class="text-2xl font-bold mb-4">Add Food Item</h2>
             <form id="foodForm" class="space-y-4">
                 <input type="hidden" id="foodId" name="id" />
@@ -429,9 +429,9 @@
                     console.log("====================================");
                     alert(result);
                     if (result == "Food item added successfully!" || result == "Food updated") {
-                        editingId = false;
                         closeModal();
                         await fetchFoodItems();
+                        editingId = false;
                     }
                     return;
                 }

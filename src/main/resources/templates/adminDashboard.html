@@ -381,7 +381,7 @@
                 console.log("fetching orders");
                 console.log('====================================');
                 fetchRecentOrders();
-            }, 15000);
+            }, 5000);
             // fetchNotifications();
         });
         function displayUserData(userData) {
@@ -505,7 +505,7 @@
                     labels: categoryData.labels || ['Grains', 'Vegetables', 'Fruits', 'Protein', 'Dairy'],
                     datasets: [{
                         data: categoryData.values || [12, 19, 3, 5, 2],
-                        backgroundColor: ['#FCD34D', '#34D399', '#F87171', '#60A5FA', '#A78BFA']
+                        backgroundColor: ['#FCD34D', '#34D399', '#F87171', '#60A5FA', '#A78BFA', "#D61BFA"]
                     }]
                 },
                 options: {
@@ -700,7 +700,7 @@
         }
 
         async function setStatus(id, status) {
-            alert("clicked");
+            // alert("clicked");
             try {
                 const response = await fetch(`/api/orders/${id}/${status}`, {
                     method: "PUT",

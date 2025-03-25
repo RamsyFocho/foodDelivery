@@ -159,7 +159,7 @@
                             <span id="price" class=" text-green-600 font-bold"
                                 th:text="${item.price + 'FCFA'}">25.99FCFA</span>
                         </div>
-                        <p class="hidden" id="itemQuantity" th:text="${item.quantity}"></p>
+                        <a class="hidden" id="itemQuantity" th:text="${item.quantity}"></a>
                         <p class="text-sm text-gray-600 mb-4" th:text="${'Stock: ' + item.quantity +' '+ item.unit}">
                             Stock:
                             100</p>
@@ -250,14 +250,12 @@
                         </thead>
                         <tbody class="bg-white divide-y divide-gray-200">
                             <tr th:each="order : ${orders}"
-                              th:classappend="${order.status.toLowerCase() == 'cancelled' || order.status.toLowerCase() == 'completed' ? 'opacity-50 pointer-events-none' : ''}">
+                                th:classappend="${order.status.toLowerCase() == 'cancelled' || order.status.toLowerCase() == 'completed' ? 'opacity-50 pointer-events-none' : ''}">
                                 <td class="px-6 py-4 whitespace-nowrap" th:text="${order.id}">#12345</td>
                                 <td class="px-6 py-4 whitespace-nowrap" th:text="${order.orderDate}">2025-01-20</td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full "
-                                        th:data-status="${order.status}"
-                                        th:text="${order.status}">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full "
+                                        th:data-status="${order.status}" th:text="${order.status}">
                                         Delivered
                                     </span>
                                 </td>
@@ -421,21 +419,24 @@
 
         function addToCart(button) {
             // check if the quantity is less than 0
-            if (document.getElementById("itemQuantity").innerHTML <= 0) {
-                alert("Stock of this item is finished");
-                return;
-            }
+
 
             const itemContainer = button.closest('.border');
             const itemName = itemContainer.querySelector('h3').textContent;
             const price = itemContainer.querySelector("#price").textContent.trim();
+            const itemQuantity = itemContainer.querySelector("#itemQuantity");
             const quantity = parseInt(itemContainer.querySelector('input').value, 10);
             const itemQty = document.querySelector('.itemQty');
             const sanitizedPrice = price.replace(/[^\d.]/g, ''); // Remove non-numeric characters
             const priceValue = parseFloat(sanitizedPrice);
 
-          //---------------------check the quantity inputted-------------------
-            if(Number(document.getElementById("itemQuantity").innerHTML) < quantity) {
+            //---------------------check the quantity inputted-------------------
+            console.log(itemQuantity);
+            if (itemQuantity.innerText <= 0) {
+                alert("Stock of this item is finished");
+                return;
+            }
+            if (Number(itemQuantity.textContent) < quantity || cart.quantity >= Number(itemQuantity.textContent)) {
                 alert("Sorry. Not available quantity");
                 return;
             }
