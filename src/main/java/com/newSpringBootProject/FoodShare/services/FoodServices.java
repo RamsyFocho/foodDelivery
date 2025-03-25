@@ -2,6 +2,7 @@ package com.newSpringBootProject.FoodShare.services;
 
 import com.newSpringBootProject.FoodShare.domains.Food;
 import com.newSpringBootProject.FoodShare.repository.FoodRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class FoodServices {
     @Autowired
@@ -62,5 +64,15 @@ public class FoodServices {
     public Food getFoodByName(String name) {
         Optional<Food> foodByName = foodRepository.findByName(name);
         return foodByName.orElse(null);
+    }
+
+    public Boolean deleteFood(Long deleteId) {
+        try{
+            foodRepository.deleteById(deleteId);
+            return true;
+        }catch (Exception e){
+            log.error("e: ", e);
+            return false;
+        }
     }
 }

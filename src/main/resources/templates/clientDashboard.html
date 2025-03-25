@@ -80,11 +80,11 @@
         <!-- Top Bar -->
         <div class="flex justify-between items-center mb-8">
             <div class="flex items-center space-x-4">
-                <div class="relative">
+                <!-- <div class="relative">
                     <input type="text" placeholder="Search..."
                         class="pl-10 pr-4 py-2 border rounded-lg w-64 focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-                </div>
+                </div> -->
             </div>
             <div class="flex items-center space-x-4">
                 <button class="p-2 relative">
@@ -141,7 +141,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-600">Pending</p>
-                            <h3 class="text-2xl font-bold" th:text="${pendingOrders}">2</h3>
+                            <h3 class="text-2xl font-bold" th:text="${activeOrders}">2</h3>
                         </div>
                     </div>
                 </div>
@@ -421,7 +421,7 @@
 
         function addToCart(button) {
             // check if the quantity is less than 0
-            if (document.getElementById("itemQuantity").value <= 0) {
+            if (document.getElementById("itemQuantity").innerHTML <= 0) {
                 alert("Stock of this item is finished");
                 return;
             }
@@ -433,6 +433,12 @@
             const itemQty = document.querySelector('.itemQty');
             const sanitizedPrice = price.replace(/[^\d.]/g, ''); // Remove non-numeric characters
             const priceValue = parseFloat(sanitizedPrice);
+
+          //---------------------check the quantity inputted-------------------
+            if(Number(document.getElementById("itemQuantity").innerHTML) < quantity) {
+                alert("Sorry. Not available quantity");
+                return;
+            }
 
             console.log(`Price text: "${price}"`);
             console.log(`Sanitized price: "${sanitizedPrice}"`);

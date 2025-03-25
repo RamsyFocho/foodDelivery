@@ -53,10 +53,14 @@ public class pages{
     }
     @GetMapping("/inventory")
     public String inventoryPage(HttpSession session){
-        Long userId = (Long) session.getAttribute("clientId");
-        if(session.getAttribute("role")=="" || userId == null){
+//        Long userId = (Long) session.getAttribute("clientId");
+        if(session.getAttribute("role")=="" || session.getAttribute("role")=="admin"){
             return "/login.html";
         }
+        if(session.getAttribute("adminId") == null){
+            return "redirect:/loginPage";
+        }
+        System.out.println("The user role is "+session.getAttribute("role"));
         return "inventory.html";
     }
 
