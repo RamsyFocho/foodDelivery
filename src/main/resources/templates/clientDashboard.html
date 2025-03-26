@@ -608,67 +608,64 @@
         let cart = [];
 
         function addToCart(button) {
-            // check if the quantity is less than 0
-
-
+            // Get the container for the food item card
             const itemContainer = button.closest('.border');
+
+            // Retrieve food item details
             const itemName = itemContainer.querySelector('h3').textContent;
-            const price = itemContainer.querySelector("#price").textContent.trim();
-            const itemQuantity = itemContainer.querySelector("#itemQuantity");//qty of the item
-            const quantity = parseInt(itemContainer.querySelector('input').value, 10);
-            const itemQty = document.querySelector('.itemQty');//qty of item in card
-            const sanitizedPrice = price.replace(/[^\d.]/g, ''); // Remove non-numeric characters
+            const priceText = itemContainer.querySelector("#price").textContent.trim();
+            const stockElement = itemContainer.querySelector("#itemQuantity"); // Element holding available stock
+            const stock = parseInt(stockElement.textContent, 10); // Available stock
+
+            // Get the quantity entered by the user
+            const quantityInput = itemContainer.querySelector('input');
+            const quantity = parseInt(quantityInput.value, 10);
+
+            // Validate the entered quantity
+            if (isNaN(quantity) || quantity <= 0) {
+                alert("Please enter a valid quantity.");
+                return;
+            }
+            // Check if entered quantity exceeds available stock
+            if (quantity > stock) {
+                alert("Requested quantity exceeds available stock.");
+                return;
+            }
+            // Check if the item is already in the cart
+            const existingItem = cart.find(item => item.name === itemName);
+            if (existingItem && (existingItem.quantity + quantity) > stock) {
+                alert("Total quantity in cart cannot exceed available stock.");
+                return;
+            }
+
+            // Process price string and convert to number
+            const sanitizedPrice = priceText.replace(/[^\d.]/g, ''); // Remove non-numeric characters
             const priceValue = parseFloat(sanitizedPrice);
 
-            //---------------------check the quantity inputted-------------------
-            console.log(itemQuantity);
-            if (itemQuantity.innerText <= 0) {
-                alert("Stock of this item is finished");
-                return;
-            }
-            const Item = cart.find(item => item.name === itemName);
-            console.log('====================================');
-            console.log(Item);
-            console.log('====================================');
-            if (Number(itemQuantity.textContent) < quantity || Item.quantity >= Number(itemQuantity.textContent)) {
-                alert("Sorry. Not available quantity");
-                return;
-            }
-
-            console.log(`Price text: "${price}"`);
+            console.log(`Price text: "${priceText}"`);
             console.log(`Sanitized price: "${sanitizedPrice}"`);
             console.log(`Parsed priceValue: ${priceValue}`);
             console.log(`Input quantity: ${quantity}`);
 
-            let totalQty = 0;
-            if (!isNaN(priceValue) && quantity > 0) {
-                const existingItem = cart.find(item => item.name === itemName);
-
-                if (existingItem) {
-                    existingItem.quantity += quantity;
-                } else {
-                    cart.push({
-                        name: itemName,
-                        quantity: quantity,
-                        price: priceValue,
-                    });
-                }
-                console.log(cart);
-                console.log("the cart is :\n");
-                cart.map(item => {
-                    totalQty += item.quantity;
-                });
-                updateCartUI();
-
-                // Show notification
-                showNotification(`Added ${quantity} ${itemName} to cart`);
-
-                // Reset input
-                itemContainer.querySelector('input').value = '';
+            // Add the item to the cart or update quantity if it already exists
+            if (existingItem) {
+                existingItem.quantity += quantity;
             } else {
-                alert("Insert Quantity");
-                console.error('Invalid price or quantity');
+                cart.push({
+                    name: itemName,
+                    quantity: quantity,
+                    price: priceValue,
+                });
             }
+            console.log("Cart:", cart);
+
+            updateCartUI(); // Update the cart UI with new cart data
+
+            // Show a notification about the addition
+            showNotification(`Added ${quantity} ${itemName} to cart`);
+
+            // Reset the input field
+            quantityInput.value = '';
         }
 
 
