@@ -51,6 +51,10 @@ public class pages{
     public String AboutPage(){
         return "about.html";
     }
+    @GetMapping("/menu")
+    public String MenuPage(){
+        return "menu.html";
+    }
     @GetMapping("/inventory")
     public String inventoryPage(HttpSession session){
 //        Long userId = (Long) session.getAttribute("clientId");
