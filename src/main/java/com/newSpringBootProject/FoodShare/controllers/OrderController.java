@@ -5,6 +5,7 @@ import com.newSpringBootProject.FoodShare.domains.FoodOrder;
 import com.newSpringBootProject.FoodShare.domains.Order;
 import com.newSpringBootProject.FoodShare.domains.User;
 import com.newSpringBootProject.FoodShare.services.*;
+import com.newSpringBootProject.FoodShare.tools.EmailService;
 import com.newSpringBootProject.FoodShare.webdomains.OrderItems;
 import com.newSpringBootProject.FoodShare.webdomains.OrderRequest;
 import jakarta.servlet.http.HttpSession;
@@ -29,7 +30,7 @@ public class OrderController {
     @Autowired
     private FoodOrderService foodOrderService;
     @Autowired
-    private SmsService smsService;
+    private EmailService emailService;
 
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest, HttpSession session) {
@@ -54,6 +55,8 @@ public class OrderController {
         newOrder.setTotal(total);
         newOrder.setLocation(location);
         orderService.addOrder(newOrder);
+//        send email confirmation via email
+//        emailService.sendOrderConfirmation(newOrder.getUser().getEmail(),newOrder.getStatus());
 
 //        add now the Food items
         for(OrderItems orders: orderItems){
@@ -71,7 +74,7 @@ public class OrderController {
         }
 
 //        return ResponseEntity.ok(orderService.addOrder(order));
-        return ResponseEntity.ok("test");
+        return ResponseEntity.ok("added");
     }
     @GetMapping("/recent")
     public ResponseEntity<?> getOrders(){
@@ -103,7 +106,8 @@ public class OrderController {
                 String phoneNumber = user.getPhoneNumber();
                 System.out.println(phoneNumber);
                 String message = "Thanks for Placing your order using the RamsyDeliverySystem. Your order would be here soon. Please prcodeed by sending the money to this MOMO account (default momo number and name)";
-                smsService.sendSms(phoneNumber, message);
+//                smsService.sendSms(phoneNumber, message);
+//                emailService.sendOrderConfirmation(user.getEmail(),status);
             }
             return ResponseEntity.ok("ok");
 
