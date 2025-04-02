@@ -105,8 +105,8 @@
                 </div>
             </div>
 
-             <!-- Food Items Table -->
-             <div class="bg-white rounded-lg shadow-sm overflow-x-scroll">
+            <!-- Food Items Table -->
+            <div class="bg-white rounded-lg shadow-sm overflow-x-scroll">
                 <table class="min-w-full w-full divide-y divide-gray-200 overflow-x-scroll">
                     <thead class="bg-gray-50">
                         <tr>
@@ -188,8 +188,41 @@
                         </span>
                     </div>
                 </div>
-
-                <!-- Rest of the form fields remain the same -->
+                <!-- Price Field -->
+                <div>
+                    <label for="price" class="block text-sm font-medium text-gray-700">Price</label>
+                    <div class="mt-1 flex rounded-lg shadow-sm">
+                        <input type="number" id="price" name="price" min="0"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            required />
+                    </div>
+                </div>
+                <!-- Unit Field -->
+                <div>
+                    <label for="unit" class="block text-sm font-medium text-gray-700">Unit</label>
+                    <div class="mt-1 flex rounded-lg shadow-sm">
+                        <input type="text" id="unit" name="unit"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            required />
+                    </div>
+                </div>
+                <!-- Expriry date Field -->
+                <div>
+                    <label for="expiryDate" class="block text-sm font-medium text-gray-700">Expiry Date</label>
+                    <div class="mt-1 flex rounded-lg shadow-sm">
+                        <input type="date" id="expiryDate" name="expiryDate"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            required />
+                    </div>
+                </div>
+                <!-- image Field -->
+                <div>
+                    <label for="imageField" class="block text-sm font-medium text-gray-700">Expiry Date</label>
+                    <div class="mt-1 flex rounded-lg shadow-sm">
+                        <input type="file" id="imageField" name="imageField" accept="image/*"
+                            class="block w-full px-3 py-2 border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+                    </div>
+                </div>
 
                 <!-- Form Buttons -->
                 <div class="flex flex-col sm:flex-row justify-end gap-3 mt-6">
@@ -305,7 +338,7 @@
                 ${new Date(item.expiryDate).toLocaleDateString()}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                <img class="mt-2 border w-10 h-10 object-cover rounded" 
+                <img  class="mt-2 border w-10 h-10 object-cover rounded" 
                      src="${item.imagePath}" 
                      alt="food image">                    
             </td>

@@ -31,6 +31,8 @@ public class OrderController {
     private FoodOrderService foodOrderService;
     @Autowired
     private EmailService emailService;
+    @Autowired
+    private SmsService smsService;
 
     @PostMapping
     public ResponseEntity<?> createOrder(@RequestBody OrderRequest orderRequest, HttpSession session) {
@@ -55,8 +57,13 @@ public class OrderController {
         newOrder.setTotal(total);
         newOrder.setLocation(location);
         orderService.addOrder(newOrder);
-//        send email confirmation via email
-//        emailService.sendOrderConfirmation(newOrder.getUser().getEmail(),newOrder.getStatus());
+
+
+
+//        sms
+//        String message = "Thanks for Placing your order using the RamsyDeliverySystem. Your order would be here soon. Please prcodeed by sending the money to this MOMO account (default momo number and name)";
+//        System.out.println("Entering in the sms service");
+//        smsService.sendSms(phoneNumber, message);
 
 //        add now the Food items
         for(OrderItems orders: orderItems){
@@ -72,7 +79,8 @@ public class OrderController {
 
             foodOrderService.addFoodOrder(foodOrder);
         }
-
+        //        send email confirmation via email
+        emailService.sendOrderConfirmation(newOrder.getUser().getEmail(),newOrder.getStatus());
 //        return ResponseEntity.ok(orderService.addOrder(order));
         return ResponseEntity.ok("added");
     }
@@ -107,7 +115,7 @@ public class OrderController {
                 System.out.println(phoneNumber);
                 String message = "Thanks for Placing your order using the RamsyDeliverySystem. Your order would be here soon. Please prcodeed by sending the money to this MOMO account (default momo number and name)";
 //                smsService.sendSms(phoneNumber, message);
-//                emailService.sendOrderConfirmation(user.getEmail(),status);
+                emailService.sendOrderConfirmation(user.getEmail(),status);
             }
             return ResponseEntity.ok("ok");
 

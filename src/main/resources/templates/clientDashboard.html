@@ -662,7 +662,7 @@
             updateCartUI(); // Update the cart UI with new cart data
 
             // Show a notification about the addition
-            showNotification(`Added ${quantity} ${itemName} to cart`);
+            //showNotification(`Added ${quantity} ${itemName} to cart`);
 
             // Reset the input field
             quantityInput.value = '';
@@ -772,7 +772,7 @@
                 if (response.ok) {
                     //const data = await response.json(); // Get response data from backend
 
-                    showNotification('Order placed successfully!', 'success');
+                    //showNotification('Order placed successfully!', 'success');
                     alert("Your order has been placed. We'll contact u in a short while");
                     // Clear cart and update UI
                     cart = [];
@@ -785,14 +785,14 @@
                     //const errorData = await response.json();
                     //showNotification('error');
                     alert('error');
-                    //  console.error('Error placing order:', errorData);
+                    console.error('Error placing order:', errorData);
                     window.location.reload();
                 }
             } catch (error) {
                 //showNotification('Something went wrong while placing the order.', 'error');
                 alert('Something went wrong while placing the order.', 'error');
                 console.error('API call error:', error);
-                    window.location.reload();
+                //window.location.reload();
 
             }
         }
